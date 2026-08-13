@@ -1,0 +1,69 @@
+.dialog {
+    &.hidden {
+        display: none;
+    }
+    position: fixed;
+    z-index: 100;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    /* Убираем жесткую высоту, чтобы он рос вместе с контентом */
+    min-width: 350px;
+    max-width: 90vw; /* Чтобы не вылезал за края экрана на мобилках */
+    max-height: 90vh; /* Ограничиваем высоту скроллом, если контента слишком много */
+    overflow-y: auto; /* Добавляет скролл внутри, если превышен max-heigh*/
+
+    border-radius: 7px;
+    border: 1px solid @border-color;;
+    box-shadow: #777 3px 3px 6px;
+    background-color: #fffefe;
+    color: #333;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: min-content auto min-content;
+    grid-template-areas: "header"
+                         "content"
+                         "footer";
+
+    &__header {
+        grid-area: header;
+        background-color: @header-background;
+        padding: 5px 10px;
+        display: flex;
+        justify-content: space-between;
+        &_close {
+            border: 1px solid #999;
+            border-radius: 3px;
+            background-color: #cae4fb;
+            padding: 0 5px;
+            margin: 2px;
+            box-shadow: 2px 2px 5px #bbb;
+            &:active {
+                box-shadow: 1px 1px 1px #bbb;
+            }
+        }
+    }
+    &__content {
+        grid-area: content;
+        padding: 5px 10px;
+    }
+    &__footer {
+        grid-area: footer;
+        padding: 5px 10px;
+        display: flex;
+        gap: 10px;
+        &__button {
+            background-color: #7adeee;
+            border-radius: @border-radius;
+            border: 1px solid @border-color;
+            padding: 3px 5px;
+            text-shadow: #999 1px 1px 3px;
+            /*&__ok {
+                background-color: greenyellow;
+            }
+            &__cancel {
+                background-color: sandybrown;
+            }*/
+        }
+    }
+}

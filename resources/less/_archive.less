@@ -1,0 +1,150 @@
+.archive-layout {
+    height: 100%;
+    overflow-y: hidden;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
+    gap: 10px;
+    @media screen and (min-width: 768px) {
+        grid-template-columns: 1fr 3fr;
+        grid-template-rows: 1fr;
+        min-height: 0;
+        height: 100%;
+    }
+    .groups-compact {
+        display: grid;
+        grid-template-columns: 40px auto 40px;
+        gap: 2px;
+        align-items: baseline;
+        &__left, &__right {
+            background-color: #F1F5F9;
+            border-radius: @border-radius;
+            cursor: pointer;
+        }
+        @media screen and (min-width: 768px) {
+            display: none;
+        }
+    }
+    .groups-full {
+        display: none;
+        @media screen and (min-width: 768px) {
+            display: flex;
+            flex-direction: column;
+            gap:5px;
+            height: 100%;
+            min-height: 0;
+            overflow: hidden;
+        }
+        &__header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-shrink: 0;
+        }
+        &__left, &__right {
+            background-color: #F1F5F9;
+            border-radius: @border-radius;
+            cursor: pointer;
+        }
+        &__selected_group {
+            padding: 0 5px;
+            text-align: center;
+        }
+        &__list {
+            flex: 1 1 auto;
+            min-height: 0;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            .group-item {
+                border: 1px solid #ccc;
+                box-sizing: border-box;
+                border-radius: 3px;
+                padding: 2px 4px;
+            }
+        }
+    }
+    .products {
+        display: flex;
+        flex-direction: column;
+        gap: 7px;
+        overflow-y: auto;
+        min-height: 0;
+        .product-item {
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+            border-radius: @border-radius;
+            &__name {
+                font-weight: 500;
+                font-size: 1.05rem;
+            }
+            &__description {
+                margin-top: auto;   /* Прижимает элемент к самому низу */
+                align-self: flex-end;
+                font-weight: 400;
+                font-size: 0.85rem;
+            }
+        }
+    }
+}
+
+/* Базовый контейнер для тултипа */
+.tooltip {
+    position: relative;
+    display: inline-block;
+    cursor: help;
+    /*border-bottom: 1px dashed #666;*/ /* Визуальный маркер, что элемент интерактивен */
+    z-index: 1000;
+
+    &:has(.btn) {
+        cursor: pointer;
+    }
+}
+
+/* Общие стили для самого тултипа (::after) и его стрелочки (::before) */
+.tooltip::before,
+.tooltip::after {
+    position: absolute;
+    left: 50%;
+    bottom: 100%;
+    transform: translateX(-50%) translateY(-10px); /* Сдвиг для анимации */
+    opacity: 0;
+    pointer-events: none; /* Чтобы тултип не мешал движениям мыши */
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    z-index: 10000;
+}
+
+/* Окошко тултипа: вытягивает текст из атрибута data-tooltip */
+.tooltip::after {
+    content: attr(data-tooltip); /* Магия CSS: берем текст из HTML-атрибута */
+    background-color: #333;
+    color: #fff;
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-size: 14px;
+    white-space: nowrap; /* Запрещаем перенос строки, если текст короткий */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+/* Стрелочка тултипа (маленький треугольник под окошком) */
+.tooltip::before {
+    content: "";
+    border-width: 6px 6px 0 6px;
+    border-style: solid;
+    border-color: #333 transparent transparent transparent;
+    transform: translateX(-50%) translateY(0); /* Центрируем стрелочку */
+    margin-bottom: -6px; /* Вжимаем треугольник ровно под окошко */
+}
+
+/* Состояние при наведении мыши ИЛИ при фокусе с клавиатуры (Tab) */
+.tooltip:hover::before,
+.tooltip:hover::after,
+.tooltip:focus::before,
+.tooltip:focus::after {
+    opacity: 1;
+    transform: translateX(-50%) translateY(-6px); /* Плавно приподнимаем вверх */
+}

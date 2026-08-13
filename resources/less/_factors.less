@@ -1,0 +1,126 @@
+.factors-layout {
+    &__pane {
+        .panes__pane_header {
+            border-bottom-right-radius: @border-radius;
+            border-bottom-left-radius: @border-radius;
+            @media only screen and (min-width: 1024px) {
+                border-bottom-right-radius: 0;
+                border-bottom-left-radius: 0;
+            }
+        }
+        .panes__pane_content {
+            border: none;
+
+            fieldset {
+
+                display: flex;
+                flex-direction: column;
+
+                padding: 10px;
+                align-items: stretch;
+                gap: 5px;
+
+                margin-bottom: 10px;
+                border: 1px solid #b3d3f6;
+                border-radius: 7px;
+
+
+                legend {
+                    color: @text-color;
+                    font-weight: 600;
+                    font-size: 0.95em;
+                    margin-bottom: 5px;
+                }
+                .checkbox-group {
+                    margin: 3px 0;
+                    input {
+                        margin-right: 10px;
+                    }
+                }
+                .vertical-group {
+                    input {
+                        width: 100%;
+                    }
+                }
+            }
+            table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+            th {
+                font-weight: bold;
+                text-align: center;
+            }
+            td, th {
+                padding: 6px;
+                /*border: 1px solid #ccc;*/
+            }
+            th:first-child {
+                border-top-right-radius: @border-radius;
+                border-top-left-radius: @border-radius;
+            }
+            @media
+            only screen and (max-width: 760px),
+            (min-device-width: 768px) and (max-device-width: 1024px)  {
+
+                padding-left: 0;
+                padding-right: 0;
+
+                table, thead, tbody, th, td, tr {
+                    display: block;
+                }
+                thead tr {
+                    position: absolute;
+                    top: -9999px;
+                    left: -9999px;
+                }
+                tr:nth-of-type(odd) {
+                    background: #eefbff;
+                }
+                tr {
+                    border: 1px solid #dadada;
+                    &:first-child {
+                        border-top-left-radius: @border-radius;
+                        border-top-right-radius: @border-radius;
+                    }
+                    &:last-child {
+                        border-bottom-left-radius: @border-radius;
+                        border-bottom-right-radius: @border-radius;
+                    }
+                }
+                td {
+
+                    /* Behave  like a "row" */
+                    border: none;
+                    border-bottom: 1px solid #dfdfdf;
+                    position: relative;
+                    padding-left: 50%;
+                }
+                td:before {
+                    /* Now like a table header */
+                    position: absolute;
+                    /* Top/left values mimic padding */
+                    top: 6px;
+                    left: 6px;
+                    width: 45%;
+                    padding-right: 10px;
+                    white-space: nowrap;
+                }
+                td:before {
+                    display: inline-flex;
+                    align-items: center;
+                    height: calc(100% - 6px);
+                    content: attr(data-header);
+                }
+            }
+            @media only screen and (min-width: 1024px) {
+                border-bottom: 1px solid @border-color;
+                border-left: 1px solid @border-color;
+                border-right: 1px solid @border-color;
+                border-bottom-left-radius: @border-radius;
+                border-bottom-right-radius: @border-radius;
+                padding: 5px 10px 5px 10px;
+            }
+        }
+    }
+}

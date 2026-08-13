@@ -1,0 +1,174 @@
+.settings-layout {
+    &__menu, &__glucose, &__products {
+        padding-top: 0;
+
+        .menu_pane, .glucose_pane, .products_pane {
+            padding: 0;
+            margin-top: 0;
+            border-top-left-radius: 0;
+            border-top-right-radius: 0;
+
+            .panes__pane_header {
+                display: none;
+            }
+
+            .panes__pane_content {
+                border: none;
+                fieldset {
+
+                    display: flex;
+                    flex-direction: column;
+
+                    padding: 10px;
+                    align-items: stretch;
+                    gap: 5px;
+
+                    margin-bottom: 10px;
+                    border: 1px solid #b3d3f6;
+                    border-radius: 7px;
+
+
+                    legend {
+                        color: @text-color;
+                        font-weight: 600;
+                        font-size: 0.95em;
+                        margin-bottom: 5px;
+                    }
+                    .checkbox-group {
+                        margin: 3px 0;
+                        input {
+                            margin-right: 10px;
+                        }
+                    }
+                    .vertical-group {
+                        input {
+                            width: 100%;
+                        }
+                    }
+                }
+            }
+        }
+        .field {
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+            gap: 3px;
+            margin-bottom: 5px;
+            margin-top: 5px;
+        }
+    }
+    @media screen and (min-width: 768px) {
+        display: grid;
+        grid-template-areas: "menu glucose"
+                        "products products"
+                        "btns .";
+        grid-template-columns: 1fr 1fr;
+        grid-auto-rows: minmax(50px, auto);
+        gap: 10px;
+        &__menu {
+            grid-area: menu;
+            .menu_pane {
+                .panes__pane_content {
+                    fieldset {
+                        display: grid;
+                        grid-template-columns: 1fr 1fr;
+                        gap: 7px;
+                        align-items: end;
+                    }
+                }
+            }
+        }
+        &__glucose {
+            grid-area: glucose;
+            .panes__pane_content {
+                display: grid;
+                gap: 7px;
+                grid-template-columns: 1fr 1fr;
+                grid-template-rows: auto auto;
+                grid-template-areas: "plasma mmol"
+                                    "levels levels";
+                >fieldset:first-child {
+                    grid-area: plasma;
+                }
+                >fieldset:nth-child(2) {
+                    grid-area: mmol;
+                }
+                >fieldset:last-child {
+                    grid-area: levels;
+                }
+            }
+        }
+        &__products {
+            grid-area: products;
+            .products_pane {
+                .panes__pane_content {
+                    fieldset {
+                        display: grid;
+                        grid-template-columns: 1fr 1fr;
+                        gap: 7px;
+                        grid-template-areas: "fillcheck frequent"
+                                "filteroff frequentqty";
+                        > .field:first-child {
+                            grid-area: fillcheck;
+                        }
+                        > .field:nth-child(2) {
+                            grid-area: frequent;
+                        }
+                        > .field:nth-child(3) {
+                            grid-area: frequentqty;
+                        }
+                        > .field:last-child {
+                            grid-area: filteroff;
+                        }
+                    }
+                }
+            }
+        }
+        .menu_pane, .glucose_pane, .products_pane {
+            border-top-left-radius: 5px;
+            border-top-right-radius: 5px;
+
+            .panes__pane_header {
+                display: block;
+            }
+            .panes__pane_content {
+                padding-top: 10px;
+            }
+        }
+    }
+    @media screen and (min-width: 1025px) {
+        &__menu {
+            grid-area: menu;
+            .menu_pane {
+                .panes__pane_content {
+                    fieldset {
+                        display: grid;
+                        grid-template-columns: 1fr;
+                        gap: 7px;
+                    }
+                }
+            }
+        }
+        &__glucose {
+            .panes__pane_content {
+                grid-template-columns: 1fr;
+                grid-template-areas: "plasma"
+                                        "mmol"
+                                    "levels";
+            }
+        }
+        &__products {
+            .products_pane {
+                .panes__pane_content {
+                    fieldset {
+                        grid-template-columns: 1fr;
+                        grid-template-areas: "fillcheck"
+                            "filteroff"
+                            "frequent"
+                            "frequentqty";
+                    }
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,79 @@
+.btn {
+    padding: 5px 10px;
+    border: 1px solid #888;
+    border-radius: 5px;
+    box-shadow: 2px 2px 5px @input-border-color;
+    text-shadow: #eee 1px 1px 3px;
+    background-color: #fff;
+    &:active {
+        box-shadow: 1px 1px 1px @input-border-color;
+    }
+    &.default {
+        background-color: @button-default-color;
+        color: #333;
+    }
+    &.primary {
+        background-color: @button-primary-color;
+        color: #fff;
+    }
+}
+input, select {
+    border-radius: @border-radius;
+    border: 1px solid @input-border-color;
+}
+.button-horizontal {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+}
+.checkbox-group {
+    margin: 3px 0;
+    @media screen and (min-width: 768px) {
+        margin: 10px 5px;
+    }
+    label {
+        input {
+            width: 15px;
+            height: 15px;
+            margin-right: 7px;
+        }
+    }
+}
+.horizontal-group {
+    display: grid;
+    grid-template-columns: 3fr 2fr;
+    align-items: center;
+    /*background-color: #f4f4f4;*/
+    .label-pre, .label-post{
+        padding: 5px 10px;
+    }
+    input {
+        width: 100%;
+    }
+    &:first-child {
+        border-top-right-radius: @border-radius;
+        border-top-left-radius: @border-radius;;
+    }
+    &:last-child {
+        border-bottom-left-radius: @border-radius;
+        border-bottom-right-radius: @border-radius;
+    }
+}
+.vertical-group {
+    display: grid;
+    grid-template-columns: 1fr;
+    .label-pre, .label-post{
+        padding: 5px 10px;
+    }
+    input {
+        width: 110px;
+    }
+    &:first-child {
+        border-top-right-radius: @border-radius;
+        border-top-left-radius: @border-radius;;
+    }
+    &:last-child {
+        border-bottom-left-radius: @border-radius;
+        border-bottom-right-radius: @border-radius;
+    }
+}

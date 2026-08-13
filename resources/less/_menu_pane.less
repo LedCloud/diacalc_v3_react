@@ -1,0 +1,245 @@
+.menu-pane {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    min-height: 0;
+    overflow-y: auto;
+    &__actions {
+        display: flex;
+        flex-direction: row;
+        gap: 3px;
+        justify-content: space-between;
+        align-items: stretch;
+        &__plus,&__diary,&__trash {
+            flex-grow: 0;
+        }
+        &__counter {
+            flex-grow: 1;
+            text-align: center;
+            background-image: linear-gradient(to right, rgb(85, 231, 164) 0%, rgb(85, 231, 164) 0%, rgb(109, 210, 227) 0%, rgb(109, 210, 227) 100%);
+            background-size: 46.6% 100%;
+        }
+    }
+    &__menu {
+        .menu-item {
+            display: grid;
+            grid-template-areas: "name name weight close"
+                            " info info weight .";
+            grid-template-columns: 5fr 5fr 70px 30px;
+            grid-template-rows: 1fr 1fr;
+            gap: 5px;
+            &__name {
+                grid-area: name;
+                padding: 3px 0 0 3px;
+                background-color: white;
+                font-weight: 500;
+                font-size: 1.05rem;
+            }
+            &__info {
+                grid-area: info;
+                font-weight: 500;
+                font-size: 0.85rem;
+                text-align: right;
+            }
+            &__weight {
+                grid-area: weight;
+                height: 35px;
+                line-height: 35px;
+                margin: auto 0;
+            }
+            &__close {
+                grid-area: close;
+                width: 30px;
+                height: 30px;
+            }
+        }
+    }
+    &__factors {
+        margin: 5px 0;
+        display: grid;
+        grid-template-columns: 3fr 3fr 3fr 1fr;
+        grid-template-areas:
+            "select select select results"
+            "k1 k2 k3 results"
+            "gl1 gl2 be results"
+            "doses doses doses results"
+            "scale scale scale scale";
+        gap: 5px;
+        &__select {
+            grid-area: select;
+            .factors-selector {
+                width: 100%;
+            }
+        }
+        .factor {
+            display: flex;
+            gap: 3px;
+            align-items: baseline;
+            align-content: stretch;
+            justify-content: flex-start;
+            position: relative;
+            z-index: 1;
+            min-width: 0;
+        }
+        .factor {
+            &>:first-child {
+                padding: 0 3px;
+            }
+            &>:last-child {
+                flex-grow: 1;
+            }
+        }
+        &__k1 {
+            grid-area: k1;
+        }
+        &__k2 {
+            grid-area: k2;
+        }
+        &__k3 {
+            grid-area: k3;
+        }
+        &__gl1 {
+            grid-area: gl1;
+        }
+        &__gl2 {
+            grid-area: gl2;
+        }
+        &__be {
+            grid-area: be;
+        }
+        &__scale {
+            grid-area: scale;
+        }
+        &__results {
+            grid-area: results;
+            display: grid;
+            grid-template-columns: 1fr;
+            padding: 3px;
+            border: @border-color solid 1px;
+            border-radius: @border-radius;
+
+            .results-piece {
+                display: grid;
+                grid-template-columns: 1fr 2fr;
+                padding: 1px 2px;
+                align-items: baseline;
+                .results-piece {
+                    &__lbl {
+                        text-align: center;
+                    }
+                    &__vl {
+                        font-weight: 500;
+                        font-size: 0.99rem;
+                        padding: 1px 2px 1px 4px;
+                    }
+                }
+                &:nth-child(odd) {
+                    background-color: #dddddd;
+                }
+            }
+        }
+        .scale-bars {
+            >div {
+                padding: 2px 3px;
+            }
+            display: flex;
+            flex-direction: row;
+            &__prot {
+                color: #0b1d3a;
+                text-align: center;
+                border-top-left-radius: 5px;
+                border-bottom-left-radius: 5px;
+                background-color: #ff5500;
+                background-image: linear-gradient(45deg, rgba(255, 255, 255, .15) 25%, transparent 25%,
+                transparent 50%, rgba(255, 255, 255, .15) 50%, rgba(255, 255, 255, .15) 75%, transparent 75%, transparent);
+            }
+            &__fat {
+                color: #0b1d3a;
+                background-color: #ffaa00;
+                text-align: center;
+            }
+            &__carb {
+                color: #0b1d3a;
+                background-color: #00aa00;
+                border-top-right-radius: 5px;
+                border-bottom-right-radius: 5px;
+                text-align: center;
+            }
+        }
+        &__grand-total {
+            justify-self: center;
+            width: 85%;
+            grid-area: doses;
+            display: grid;
+            /* Closed: one row so + / = align with the values */
+            grid-template-areas: "quick sign slow sum";
+            grid-template-columns: auto auto auto auto;
+            gap: 5px;
+            justify-content: center;
+            align-items: baseline;
+            justify-items: center;
+            font-weight: 600;
+            font-size: 1.05rem;
+
+            .doses-sign {
+                grid-area: sign;
+                align-self: center;
+            }
+            .doses-quick {
+                grid-area: quick;
+            }
+            .doses-slow {
+                grid-area: slow;
+            }
+            .doses-sum {
+                grid-area: sum;
+                align-self: center;
+            }
+            .doses-detail-quick1 {
+                grid-area: detail_q1;
+                display: none;
+            }
+            .doses-detail-slow1 {
+                grid-area: detail_sl1;
+                display: none;
+            }
+            .doses-detail-quick2 {
+                grid-area: detail_q2;
+                display: none;
+            }
+            .doses-detail-slow2 {
+                grid-area: detail_sl2;
+                display: none;
+            }
+            .dose-label {
+                font-size: 0.7rem;
+                font-weight: 400;
+            }
+
+            &.is-open {
+                grid-template-areas:
+                    "quick sign slow sum"
+                    "detail_q1 sign detail_sl1 sum"
+                    "detail_q2 sign detail_sl2 sum";
+
+                .doses-detail-quick1,
+                .doses-detail-slow1,
+                .doses-detail-quick2,
+                .doses-detail-slow2 {
+                    display: block;
+                }
+            }
+        }
+    }
+}
+
+.info-piece {
+    &__title {
+        font-weight: 400;
+        font-size: 0.7rem;
+    }
+    &__value {
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+}

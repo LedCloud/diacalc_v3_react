@@ -1,0 +1,15 @@
+{
+    "Delete Account": "Удалить аккаунт",
+    "Current Password": "Текущий пароль",
+    "New Password": "Новый пароль",
+    "Confirm Password": "Повторите пароль",
+    "Once your account is deleted, all of its resources and data will be permanently deleted. Before deleting your account, please download any data or information that you wish to retain.":
+        "Как только ваш аккаут будут удалён, все связанные с ним ресурсы будут удалены. До удаления вашего аккаунта скачайте свои данные или информацию, которую вам нужно сохранить.",
+    "Log Out": "Выйти",
+    "Register": "Регистрация",
+    "Log in": "Войти",
+    "Remember me": "Запомнить",
+    "Forgot your password?": "Забыли пароль?",
+    "email_login_placeholder": "Используйте email для входа",
+    "Already registered?": "Уже зарегистрированы?"
+}

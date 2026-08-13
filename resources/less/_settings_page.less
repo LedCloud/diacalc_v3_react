@@ -1,0 +1,152 @@
+.settings {
+    &__form {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        @media screen and (min-width: 1023px) {
+            gap: 10px;
+        }
+    }
+    &__btn-save, &__btn-fill {
+        align-self: flex-start;
+    }
+}
+.menu-panes__pane {
+    margin-top: 15px;
+    width: 100%;
+    legend {
+        font-weight: 600;
+        font-size: 1.1em;
+        margin-bottom: 10px;
+    }
+    fieldset {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 3px;
+        margin-bottom: 10px;
+        border: 1px solid #b3d3f6;
+        border-radius: 7px;
+        padding: 3px 5px;
+        label {
+            font-weight: 400;
+            font-size: 0.9em;
+            input {
+                margin-right: 5px;
+                border-radius: 3px;
+            }
+        }
+    }
+    .field {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 3px;
+        margin-bottom: 10px;
+        margin-top: 10px;
+    }
+}
+
+.menu-panes {
+    display:grid;
+    grid-template-rows: auto;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-areas:
+        "menu glucose products"
+        "button notification notification";
+    @media screen and (max-width: 1023px) {
+        grid-template-columns: 1fr;
+
+        grid-template-areas:
+            "content"
+            "button"
+            "notification";
+    }
+    gap: 15px;
+    justify-content: stretch;
+    align-content: stretch;
+    align-items: stretch;
+    &__pane {
+        height: 100%;
+        border: 1px solid @border-color;
+        border-radius: 5px;
+        padding: 15px;
+        background-color: @background-color-light;
+        grid-area: glucose;
+        @media screen and (max-width: 1023px) {
+            grid-area: content;
+        }
+        &_header {
+            color: @text-color;
+            background-color: @header-background;
+            border-top: 1px solid @border-color;
+            border-left: 1px solid @border-color;
+            border-right: 1px solid @border-color;
+            border-top-left-radius: 5px;
+            border-top-right-radius: 5px;
+            padding: 10px 10px 5px;
+        }
+        &_content {
+            background-color: #fff;
+            border-bottom: 1px solid @border-color;
+            border-left: 1px solid @border-color;
+            border-right: 1px solid @border-color;
+            border-bottom-left-radius: 5px;
+            border-bottom-right-radius: 5px;
+            padding: 5px 10px 5px 10px;
+            color: #333;
+            legend {
+                color: @text-color;
+                font-weight: 600;
+                font-size: 0.95em;
+            }
+        }
+
+        &:first-child {
+            grid-area: menu;
+        }
+        &:last-child {
+            grid-area: products;
+        }
+        @media screen and (max-width: 1023px) {
+            &:first-child {
+                grid-area: content;
+            }
+            &:last-child {
+                grid-area: content;
+            }
+
+        }
+    }
+}
+.validation-error {
+    color: #aa1111;
+}
+
+/*********** react page */
+.settings-layout__pane {
+    .glucose {
+        margin-top: 15px;
+        width: 100%;
+    }
+    .panes__pane_content {
+        fieldset {
+            border: 1px solid green;
+            padding: 5px;
+            legend {
+                font-weight: 600;
+                font-size: 1.05em;
+            }
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+            label {
+                margin: 0;
+                input {
+                    margin-right: 5px;
+                }
+            }
+        }
+    }
+}
+//settings-layout__pane

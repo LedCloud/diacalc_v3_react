@@ -1,0 +1,271 @@
+.calculations-layout {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-auto-rows: min-content;
+    gap: 10px;
+    grid-template-areas: "glucose"
+                        "influence"
+                        "bmi-correction";
+    @media screen and (min-width: 1024px) {
+        grid-template-columns: 1fr 2fr;
+        grid-template-areas: "glucose influence"
+                        "bmi-correction bmi-correction";
+    }
+    .glucose {
+        grid-area: glucose;
+    }
+    .influence {
+        grid-area: influence;
+    }
+    .bmi-correction {
+        grid-area: bmi-correction;
+        grid-template-columns: 1fr 1fr;
+        grid-auto-rows: min-content;
+        gap: 5px;
+        grid-template-areas: "";
+    }
+}
+.influence__panel {
+    &__inputs {
+        display: grid;
+        grid-template-columns: 1fr;
+        &_top {
+            display: grid;
+            grid-template-columns: 1fr;
+            grid-auto-rows: min-content;
+        }
+        &_bottom {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-auto-rows: min-content;
+            justify-items: center;
+            > div:nth-child(2) {
+                display: grid;
+                grid-template-columns: 1fr;
+                grid-auto-rows: min-content;
+            }
+        }
+    }
+    @media screen and (min-width: 768px) {
+        &__inputs {
+            grid-template-columns: 1fr 3fr;
+            grid-auto-rows: min-content;
+            &_top {
+                gap: 10px;
+            }
+            &_bottom {
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                padding: 0 15px;
+            }
+        }
+    }
+    @media screen and (min-width: 1024px) {
+        &__inputs {
+            grid-template-columns: 1fr;
+            grid-auto-rows: min-content;
+            &_bottom {
+                padding: 0;
+                display: grid;
+                grid-template-columns: 1fr;
+                justify-items: stretch;
+                > div {
+                    margin: 3px 0;
+                    border: 1px solid @input-border-color;
+                    border-radius: @border-radius;
+                }
+            }
+        }
+    }
+    &__results {
+        display: grid;
+        grid-template-columns: 1fr;
+        grid-auto-rows: min-content;
+        justify-items: center;
+    }
+    @media screen and (min-width: 768px) {
+        &__results {
+            grid-template-columns: 1fr 1fr;
+            margin: 10px 5px;
+        }
+    }
+}
+@media screen and (min-width: 1024px) {
+    .influence__panel {
+        display: grid;
+        grid-template-columns: 38% 62%;
+        grid-auto-rows: min-content;
+    }
+}
+
+.bmi-correction__panel {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-auto-rows: min-content;
+    gap: 7px;
+    grid-template-areas: "bmi-panel"
+                        "target-panel"
+                        "results-panel";
+    @media screen and (min-width: 768px) {
+        grid-template-columns: 1fr 1fr;
+        grid-template-areas: "bmi-panel target-panel"
+                        "results-panel results-panel";
+        gap: 10px;
+    }
+    .bmi_panel {
+        grid-area: bmi-panel;
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        grid-auto-rows: min-content;
+        align-items: baseline;
+        gap: 5px;
+        grid-template-areas: "bmi-label bmi-result"
+                        "weight-label weight-input"
+                        "height-label height-input"
+                        "sex-label sex-input"
+                        "note note";
+        &__bmi-label {
+            grid-area: bmi-label;
+        }
+        &__bmi-result {
+            grid-area: bmi-result;
+        }
+        &__weight-label {
+            grid-area: weight-label;
+        }
+        &__weight-input {
+            grid-area: weight-input;
+        }
+        &__height-label {
+            grid-area: height-label;
+        }
+        &__height_input {
+            grid-area: height_input;
+        }
+        &__sex-label {
+            grid-area: sex-label;
+        }
+        &__sex-input {
+            grid-area: sex-input;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr;
+            align-items: start;
+        }
+        &__note {
+            grid-area: note;
+            text-wrap: pretty;
+            font-size: 0.8em;
+            font-weight: 600;
+            padding: 7px 0;
+            @media screen and (min-width: 768px) {
+                padding: 10px 0;
+            }
+            a {
+                text-wrap: pretty;
+                color: darkblue;
+                &:visited {
+                    color: #5836ad;
+                }
+                &:hover {
+                    color: #1a1ae4;
+                }
+            }
+        }
+    }
+    .target_panel {
+        grid-area: target-panel;
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        grid-auto-rows: min-content;
+        align-items: baseline;
+        gap: 5px;
+        grid-template-areas: "age-input age-input"
+                        "weight-input weight-input"
+                        "period period"
+                        "sex-input sex-input";
+        &__age-input {
+            grid-area: age-input;
+        }
+        &__weight-input {
+            grid-area: weight-input;
+        }
+        &__period {
+            grid-area: period;
+            display: flex;
+            flex-direction: column;
+        }
+    }
+    .results_panel {
+        grid-area: results-panel;
+        display: grid;
+        grid-template-columns: 1fr;
+        grid-auto-rows: min-content;
+        align-items: baseline;
+        gap: 5px;
+        grid-template-areas: "sex-input"
+                    "activity"
+                    "results";
+        @media screen and (min-width: 768px) {
+            grid-template-columns: 1fr 1fr;
+            grid-template-areas: "sex-input ."
+                    "activity activity"
+                    "results results";
+        }
+        &__sex-input {
+            grid-area: sex-input;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr;
+            align-items: center;
+            @media screen and (min-width: 768px) {
+                margin: 0 10px;
+                > div:nth-child(2) {
+                    display: flex;
+                }
+            }
+        }
+        @media screen and (min-width: 1024px) {
+            &__sex-input {
+                grid-template-columns: 1fr;
+                grid-template-rows: 1fr 1fr;
+            }
+        }
+        &__activity {
+            grid-area: activity;
+            > div:first-child {
+                margin: 10px 0;
+                display: flex;
+                flex-direction: column;
+                .activity {
+                    &__type, &__steps {
+                        font-weight: 600;
+                        font-size: 1.05rem;
+                    }
+                }
+            }
+        }
+        &__results {
+            grid-area: results;
+            display: grid;
+            grid-template-columns: 1fr;
+            grid-auto-rows: min-content;
+            gap: 5px;
+            align-items: baseline;
+            font-size: 0.9rem;
+            &__header {
+                font-weight: 600;
+            }
+            &__result {
+                display: grid;
+                grid-template-columns: 3fr 1fr;
+                > div:nth-child(2) {
+                    font-weight: 600;
+                    font-size: 0.95rem;
+                    text-align: end;
+                }
+            }
+        }
+    }
+}

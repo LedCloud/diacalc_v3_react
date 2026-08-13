@@ -1,0 +1,35 @@
+.tabs {
+    &__tags {
+        .tab-btn {
+            padding: 10px 20px;
+            cursor: pointer;
+            border-top: none;
+            border-left: none;
+            border-right: none;
+            background: none;
+            outline: none;
+            transition: 0.2s;
+            &.active {
+                border-bottom: 4px solid @border-color;
+                color: #007bff;
+            }
+            @media screen and (min-width: 768px) {
+                display: none;
+            }
+        }
+    }
+    &__content {
+        .tab-pane {
+            display: none;
+            /*padding-top: 20px; this one is for bigger devices*/
+            &.active {
+                display: block;
+            }
+            @media screen and (min-width: 768px) {
+                display: block;
+                height: 100%;
+            }
+        }
+    }
+}
+

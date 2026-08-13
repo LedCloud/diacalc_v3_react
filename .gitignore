@@ -1,0 +1,71 @@
+# Environment & secrets
+.env
+.env.*
+!.env.example
+/auth.json
+config.local.php
+local_conf.php
+*.pem
+*.key
+
+# Dependencies & build
+/node_modules
+/public/build
+/public/hot
+/public/storage
+/vendor
+
+# Laravel runtime
+*.log
+.phpactor.json
+.phpunit.result.cache
+/.phpunit.cache
+/storage/*.key
+/storage/pail
+
+# Database dumps & archives
+*.sql
+*.sql.gz
+*.gz
+*.zip
+*.tar
+*.tar.gz
+*.rar
+*.7z
+
+# Debug / info leaks
+/public/info.php
+
+# IDE & editors
+/.fleet
+/.idea
+/.nova
+/.vscode
+/.zed
+/nbproject/
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Homestead
+Homestead.json
+Homestead.yaml
+
+# AI / agent tooling (local only — do not publish)
+.ai/
+.claude/
+.code-review-graph/
+.cursor/
+.gemini/
+.kiro/
+.qoder/
+.mcp.json
+.opencode.json
+.cursorrules
+.windsurfrules
+AGENTS.md
+CLAUDE.md
+GEMINI.md
+QODER.md
+.github/code-review-graph.instruction.md

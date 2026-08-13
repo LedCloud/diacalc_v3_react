@@ -1,0 +1,96 @@
+.menu-header {
+    border: 1px solid @border-color;
+    border-radius: @border-radius;
+    display: grid;
+    grid-template-columns: 25px 25px auto 25px;
+    grid-template-rows: 25px;
+    justify-items: center;
+    align-items: center;
+    align-content: center;
+    padding-left: 1px;
+    padding-right: 1px;
+    column-gap: 2px;
+}
+
+.menu-small-btn {
+    text-align: center;
+    color: #333;
+    border: 1px solid @border-color;
+    border-radius: 3px;
+    background: #748ea6;
+    background: linear-gradient(0deg,rgba(116, 142, 166, 1) 0%, rgba(213, 230, 240, 1) 20%, rgba(213, 230, 240, 1) 100%);
+    padding: 2px 3px;
+    width: 100%;
+    &:hover {
+        cursor: pointer;
+    }
+    &:active {
+        color: #1d8eca;
+        text-shadow: #eee 1px 1px, #fff -1px -1px;
+        background: #748ea6;
+        background: linear-gradient(0deg,rgba(116, 142, 166, 1) 0%, rgba(213, 230, 240, 1) 30%, rgba(213, 230, 240, 1) 57%, rgba(116, 142, 166, 1) 100%);
+    }
+}
+.menu-content {
+    padding: 3px 5px;
+    display: grid;
+    border: 1px solid @border-color;
+    border-radius: @border-radius;
+    grid-template-columns: 1fr;
+    grid-template-rows: auto;
+    grid-auto-flow: row;
+}
+
+.menu-item {
+    padding: 3px 5px;
+    background-color: #fff;
+    border: 1px solid @border-color;
+    border-radius: 0;
+    margin: 0;
+
+    display: grid;
+    grid-template-columns: auto 70px 20px;
+    grid-template-rows: 2fr 1fr 1fr 2fr;
+    grid-template-areas:
+        "name . closer"
+        "name weight weight"
+        "name weight weight"
+        "descr descr descr";
+    gap: 2px;
+
+    &__name {
+        grid-area: name;
+        font-weight: 600;
+        font-size: 1.1em;
+        background-color: gainsboro;
+        /** add three dots when exceed the width */
+    }
+    &__descr {
+        grid-area: descr;
+        background-color: lightblue;
+        justify-self: end;
+    }
+    &__weight {
+        grid-area: weight;
+        input {
+            width: 100%;
+            height: 100%;
+            border: #aaa solid thin;
+            box-shadow: none;
+            &:focus {
+                border: #888 solid thin;
+                box-shadow: none;
+            }
+            &:hover {
+                border: #333 solid thin;
+                box-shadow: none;
+            }
+        }
+    }
+    &__remove {
+        justify-self: end;
+        grid-area: closer;
+        margin-right: 3px;
+        margin-top: 3px;
+    }
+}
