@@ -11,6 +11,10 @@ class Eating extends Model
         'k1','k2','k3','gl1','gl2','be','eaten', 'eaten_date'
     ];
 
+    protected $casts = [
+        'eaten_date' => 'date:Y-m-d',
+    ];
+
     /**
      * Get the user that owns eating.
      */

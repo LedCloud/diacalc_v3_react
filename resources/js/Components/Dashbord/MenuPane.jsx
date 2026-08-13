@@ -1,5 +1,6 @@
 import {useTrans} from "@/Hooks/useTrans.jsx";
 import React, {useEffect, useState} from "react";
+import {endProductDrag, getProductIdFromDrop, isProductDrag, menuHasProduct} from "@/Components/Dashbord/productDrag.js";
 import InfoPiece from "@/Components/Dashbord/InfoPiece.jsx";
 import { CiTrash, CiCirclePlus } from "react-icons/ci";
 import { GoPencil } from "react-icons/go";
@@ -14,11 +15,15 @@ import Glucose from "@/Classes/Glucose.js";
 import {usePage, router} from '@inertiajs/react'
 import Dose from "@/Classes/Dose.js";
 import Tooltip from "@/Components/Tooltip.jsx";
+import FactorsPopup from "@/Components/FactorsPopup.jsx";
+import CalorieCounterPopup from "@/Components/CalorieCounterPopup.jsx";
 
 export default function MenuPane()
 {
     //This is to understand what field is being edited right now, to allow enter part of the number
     const [activeField, setActiveField] = useState({ id: null, val: '' });
+    const [showPopup, setShowPopup] = useState(false);
+    const [showCaloriePopup, setShowCaloriePopup] = useState(false);
 
     // 1. Props from Inertia (read-only snapshot)
     const {settings, menu_masks, factors, menu_items, eating} = usePage().props;
@@ -139,30 +144,75 @@ export default function MenuPane()
     };
 
     const clearMenu = () => {
+        const items = data.menu_items ?? [];
+        if (!items.length) {
+            return;
+        }
+
         const nowRow = factorsByTime
             ? factorOptions.find(f => f.now === true)
             : null;
 
-        const postClear = () => {
-            setData('menu_items', []);
-            router.post(route('dashboard.updatemenu'), {
-                menu_items: [],
-            }, {
-                preserveScroll: true,
-            });
+        const product = new MenuProduct('', 0, 0, 0, 0, 0, 50, 0);
+        items.forEach((i) => {
+            product.addProduct(new MenuProduct(i.name, i.id, i.weight, i.prot, i.fat, i.carb, i.gi, 0));
+        });
+        const menuKcal = Math.round(product.getCalor());
+
+        const today = (() => {
+            const d = new Date();
+            const y = d.getFullYear();
+            const m = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            return `${y}-${m}-${day}`;
+        })();
+        const storedDate = data.eating.eaten_date
+            ? String(data.eating.eaten_date).slice(0, 10)
+            : null;
+        const nextEaten = storedDate === today
+            ? Number(data.eating.eaten ?? 0) + menuKcal
+            : menuKcal;
+
+        const nextEating = {
+            ...data.eating,
+            eaten: nextEaten,
+            eaten_date: today,
+            ...(nowRow ? { k1: +nowRow.k1, k2: +nowRow.k2, k3: +nowRow.k3 } : {}),
         };
 
         if (nowRow) {
-            applyFactorToEating(nowRow, { onSuccess: postClear });
-        } else {
-            postClear();
+            setCurrentFactor(nowRow);
+            setOUV(new Glucose(+nowRow.k3));
         }
+
+        setData('eating', nextEating);
+        setData('menu_items', []);
+
+        router.post(route('dashboard.updatefactors'), {
+            factor: {
+                k1: nextEating.k1,
+                k2: nextEating.k2,
+                k3: nextEating.k3,
+                gl1: nextEating.gl1,
+                gl2: nextEating.gl2,
+                be: nextEating.be,
+                eaten: nextEaten,
+                eaten_date: today,
+            },
+            clear_menu: true,
+        }, {
+            preserveScroll: true,
+            showProgress: false,
+            onError: () => {
+                setData('menu_items', items);
+            },
+        });
     };
 
     const deleteItem = (id) => {
         const updated = data.menu_items.filter(el => el.id !== id);
         setData('menu_items', updated);  // optimistic UI update
-        router.delete(route('dashboard.deletemenu', id), {
+        router.delete(route('dashboard.deleteitem', id), {
             preserveScroll: true,
             onError: () => {
                 // rollback if server fails
@@ -325,21 +375,114 @@ export default function MenuPane()
 
     const calculation = calculateMenu();
 
+    const applyPopupFactor = (refreshed) => {
+        const nextEating = {
+            ...data.eating,
+            k1: +refreshed.k1,
+            k2: +refreshed.k2,
+            k3: +refreshed.k3,
+            gl1: +refreshed.gl1,
+            gl2: +refreshed.gl2,
+            be: +refreshed.be,
+        };
+        setData('eating', nextEating);
+        setGlucose1(new Glucose(nextEating.gl1));
+        setGlucose2(new Glucose(nextEating.gl2));
+        setOUV(new Glucose(nextEating.k3));
+        router.post(route('dashboard.updatefactors'), {
+            factor: {
+                k1: nextEating.k1,
+                k2: nextEating.k2,
+                k3: nextEating.k3,
+                gl1: nextEating.gl1,
+                gl2: nextEating.gl2,
+                be: nextEating.be,
+            },
+        }, {
+            preserveScroll: true,
+        });
+        setShowPopup(false);
+    };
+
+    const [dropDepth, setDropDepth] = useState(0);
+
+    const onProductDragEnter = (e) => {
+        if (!isProductDrag(e.dataTransfer)) {
+            return;
+        }
+        e.preventDefault();
+        setDropDepth(depth => depth + 1);
+    };
+
+    const onProductDragLeave = () => {
+        setDropDepth(depth => Math.max(0, depth - 1));
+    };
+
+    const onProductDragOver = (e) => {
+        if (!isProductDrag(e.dataTransfer)) {
+            return;
+        }
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'copy';
+    };
+
+    const onProductDrop = (e) => {
+        setDropDepth(0);
+        const productId = getProductIdFromDrop(e.dataTransfer);
+        endProductDrag();
+        if (!productId) {
+            return;
+        }
+        e.preventDefault();
+        if (menuHasProduct(data.menu_items, productId)) {
+            return;
+        }
+        router.post(route('dashboard.products.add_to_menu', productId), {}, {
+            preserveScroll: true,
+        });
+    };
+
+    const eatenKcal = Number(eating.eaten ?? 0);
+    const menuKcal = Math.round(calculation.product.getCalor());
+    const calorieLimit = Number(settings.calory_limit ?? 0);
+    const calorieNear = Number(settings.calorie_near ?? 300);
+    const calorieSum = eatenKcal + menuKcal;
+    const meterClass = calorieSum > calorieLimit
+        ? 'is-over'
+        : (calorieSum >= calorieLimit - calorieNear ? 'is-near' : 'is-under');
+
     return (
-        <div className="menu-pane">
+        <div
+            className={`menu-pane${dropDepth > 0 ? ' is-drop-target' : ''}`}
+            onDragEnter={onProductDragEnter}
+            onDragLeave={onProductDragLeave}
+            onDragOver={onProductDragOver}
+            onDrop={onProductDrop}
+        >
             <div className="menu-pane__actions">
                 <Tooltip text={__('create_product')}>
-                <div className="menu-pane__actions__plus btn"><CiCirclePlus /></div>
+                    <div className="menu-pane__actions__plus btn"><CiCirclePlus/></div>
                 </Tooltip>
                 <Tooltip text={__('record_diary')}>
-                <div className="menu-pane__actions__diary btn"><GoPencil /></div>
+                    <div className="menu-pane__actions__diary btn"><GoPencil/></div>
                 </Tooltip>
-                <div className="menu-pane__actions__counter">0+839 / 1800</div>
+                <div
+                    className={`menu-pane__actions__counter ${meterClass}`}
+                    role="button"
+                    tabIndex={0}
+                    onClick={() => setShowCaloriePopup(true)}
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            setShowCaloriePopup(true);
+                        }
+                    }}
+                >{eating.eaten} + {formatDec(calculation.product.getCalor(), 0)} / {settings.calory_limit}</div>
                 <Tooltip text={__('trash_menu')}>
-                    <div className="menu-pane__actions__trash btn" onClick={clearMenu}><CiTrash /></div>
+                    <div className="menu-pane__actions__trash btn" onClick={clearMenu}><CiTrash/></div>
                 </Tooltip>
             </div>
-            <div className="menu-pane__menu">
+            <div className="menu-pane__items">
                 {(data.menu_items ?? []).map(item => {
                     const product = new MenuProduct(item.name, item.id, item.weight,
                         item.prot, item.fat, item.carb, item.gi, 0);
@@ -374,8 +517,8 @@ export default function MenuPane()
                         </div>
                     );
                 })}
-
-                <div className="menu-pane__factors">
+            </div>
+            <div className="menu-pane__factors">
                     {factorOptions.length > 0 && (
                     <div className="menu-pane__factors__select">
                         <select className="factors-selector"
@@ -395,7 +538,16 @@ export default function MenuPane()
                         </select>
                     </div>
                     )}
-                    <div className="menu-pane__factors__k1 factor">
+                    <div className="factors-button-panel">
+                        <div
+                            className="factor-mobile btn"
+                            onClick={() => setShowPopup(true)}
+                        >
+                            {__('k1')}={valK1}, {__('k2')}={valK2}, {__('ouv')}={valOUV}<br />
+                            {__('gl1')}={valGlucose1}, {__('gl2')}={valGlucose2}, {__('be')}={valBE}
+                        </div>
+                    </div>
+                    <div className="menu-pane__factors__k1 factor desktop tablet">
                         <label htmlFor="factors-k1">{__('k1')}</label>
                         <input
                             id="factors-k1"
@@ -406,7 +558,7 @@ export default function MenuPane()
                             onBlur={(e) => formatFactor(e.target.value, e.target.name)}
                         />
                     </div>
-                    <div className="menu-pane__factors__k2 factor">
+                    <div className="menu-pane__factors__k2 factor desktop tablet">
                         <label htmlFor="factors-k2">{__('k2')}</label>
                         <input id="factors-k2"
                                name="k2"
@@ -417,7 +569,7 @@ export default function MenuPane()
                            />
                     </div>
                     <GlucoseInput
-                        className="menu-pane__factors__k3 factor"
+                        className="menu-pane__factors__k3 factor desktop tablet"
                         id="factors-k3"
                         field="ouv"
                         label={__('ouv')}
@@ -426,7 +578,7 @@ export default function MenuPane()
                         onBlur={(v) => formatGlucose(v, 'ouv')}
                     />
                     <GlucoseInput
-                        className="menu-pane__factors__gl1 factor"
+                        className="menu-pane__factors__gl1 factor desktop tablet"
                         id="factors-gl1"
                         field="glucose1"
                         label={__('gl1')}
@@ -435,7 +587,7 @@ export default function MenuPane()
                         onBlur={(v) => formatGlucose(v, 'glucose1')}
                     />
                     <GlucoseInput
-                        className="menu-pane__factors__gl2 factor"
+                        className="menu-pane__factors__gl2 factor desktop tablet"
                         id="factors-gl2"
                         field="glucose2"
                         label={__('gl2')}
@@ -443,7 +595,7 @@ export default function MenuPane()
                         onChange={(v) => updateGlucose(v, 'glucose2')}
                         onBlur={(v) => formatGlucose(v, 'glucose2')}
                     />
-                    <div className="menu-pane__factors__be factor">
+                    <div className="menu-pane__factors__be factor desktop tablet">
                         <label htmlFor="factors-be">{__('be')}</label>
                         <input id="factors-be"
                                name="be"
@@ -505,8 +657,20 @@ export default function MenuPane()
                     <div className="menu-pane__factors__scale">
                         <Scale prot={calculation.product.getProt()} fat={calculation.product.getFat()} carb={calculation.product.getCarb()}/>
                     </div>
-                </div>
             </div>
+            <FactorsPopup
+                factor={data.eating}
+                show={showPopup}
+                glConfig={formGlConfig()}
+                onCloseHandler={applyPopupFactor}
+            />
+            <CalorieCounterPopup
+                show={showCaloriePopup}
+                onClose={() => setShowCaloriePopup(false)}
+                eaten={eatenKcal}
+                menu={menuKcal}
+                limit={calorieLimit}
+            />
         </div>
     );
 }

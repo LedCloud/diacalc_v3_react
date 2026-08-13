@@ -92,7 +92,9 @@ class User extends Authenticatable
         // Ищем запись в связанных настройках по полю 'key'
         $setting = $this->settings()->where('key', $key)->first();
         if (!empty($setting)) {
-            return json_decode($setting->values, true);
+            $decoded = json_decode($setting->values, true);
+            $decoded = $this->flattenSettingValues($decoded);
+            return array_merge($default, $decoded);
         }
 
         return $default;
@@ -105,7 +107,9 @@ class User extends Authenticatable
         if (class_exists($path)) {
             $default = $path::DEFAULT;
         }
-        $merged = json_encode(array_merge($default, $value));
+        $value = $this->flattenSettingValues($value);
+        $mergedArr = array_merge($default, $value);
+        $merged = json_encode($mergedArr);
 
         $this->settings()->upsert([
             'key' => $key,
@@ -132,5 +136,31 @@ class User extends Authenticatable
     public function factors(): HasMany
     {
         return $this->hasMany(Factor::class)->orderBy('time', 'asc');
+    }
+
+    /**
+     * Copy stored a list of setting maps under numeric keys (e.g. "0").
+     * Promote that nested map and drop the alias calorie_limit.
+     */
+    protected function flattenSettingValues($value): array
+    {
+        if (!is_array($value)) {
+            return [];
+        }
+
+        if (isset($value[0]) && is_array($value[0])) {
+            $nested = $value[0];
+            unset($value[0]);
+            $value = array_merge($value, $nested);
+        }
+
+        if (array_key_exists('calorie_limit', $value)) {
+            if (!array_key_exists('calory_limit', $value) || $value['calory_limit'] === null) {
+                $value['calory_limit'] = $value['calorie_limit'];
+            }
+            unset($value['calorie_limit']);
+        }
+
+        return $value;
     }
 }

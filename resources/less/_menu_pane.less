@@ -2,9 +2,19 @@
     display: flex;
     flex-direction: column;
     gap: 15px;
+    height: 100%;
     min-height: 0;
-    overflow-y: auto;
+    overflow: hidden;
+
+    &.is-drop-target {
+        .menu-pane__items {
+            background-color: #e8f4ff;
+            box-shadow: inset 0 0 0 2px #7dd3fc;
+        }
+    }
+
     &__actions {
+        flex-shrink: 0;
         display: flex;
         flex-direction: row;
         gap: 3px;
@@ -15,12 +25,36 @@
         }
         &__counter {
             flex-grow: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             text-align: center;
-            background-image: linear-gradient(to right, rgb(85, 231, 164) 0%, rgb(85, 231, 164) 0%, rgb(109, 210, 227) 0%, rgb(109, 210, 227) 100%);
-            background-size: 46.6% 100%;
+            border-radius: @border-radius;
+
+            &.is-under {
+                background-color: #eaffec;
+            }
+            &.is-near {
+                background-color: #fffacc;
+            }
+            &.is-over {
+                background-color: #ffcdcd;
+            }
+
+            &:hover {
+                cursor: pointer;
+            }
         }
     }
-    &__menu {
+    &__items {
+        flex: 1 1 auto;
+        min-height: 0;
+        overflow-x: hidden;
+        overflow-y: auto;
+        isolation: isolate;
+        background-color: #fff;
+        border-bottom: 1px solid @border-color;
+        padding: 4px;
         .menu-item {
             display: grid;
             grid-template-areas: "name name weight close"
@@ -49,29 +83,36 @@
             }
             &__close {
                 grid-area: close;
+                box-sizing: border-box;
                 width: 30px;
                 height: 30px;
+                padding: 0;
+                display: flex;
+                align-items: center;
+                justify-content: center;
             }
         }
     }
     &__factors {
+        flex-shrink: 0;
         margin: 5px 0;
         display: grid;
-        grid-template-columns: 3fr 3fr 3fr 1fr;
+        gap: 5px;
+        grid-template-columns: minmax(0, 3fr) minmax(0, 3fr) minmax(0, 3fr) minmax(72px, 1fr);
         grid-template-areas:
             "select select select results"
             "k1 k2 k3 results"
             "gl1 gl2 be results"
             "doses doses doses results"
             "scale scale scale scale";
-        gap: 5px;
         &__select {
             grid-area: select;
+            min-width: 0;
             .factors-selector {
                 width: 100%;
             }
         }
-        .factor {
+        .factor:is(.desktop, .tablet) {
             display: flex;
             gap: 3px;
             align-items: baseline;
@@ -80,14 +121,61 @@
             position: relative;
             z-index: 1;
             min-width: 0;
+            overflow: hidden;
         }
         .factor {
             &>:first-child {
+                flex: 0 0 3.25em;
                 padding: 0 3px;
+                white-space: nowrap;
             }
             &>:last-child {
-                flex-grow: 1;
+                flex: 1 1 0;
+                min-width: 0;
+                width: 100%;
             }
+            input {
+                width: 100%;
+                min-width: 0;
+                box-sizing: border-box;
+            }
+        }
+        .factors-button-panel {
+            display: none;
+        }
+        @media screen and (max-width: 1024px) {
+            grid-template-columns: 4fr 4fr 4fr 90px;
+            grid-template-areas:
+                "select select select results"
+                "factor-btn factor-btn factor-btn results"
+                "factor-btn factor-btn factor-btn results"
+                "doses doses doses results"
+                "scale scale scale scale";
+
+            .factor:is(.desktop, .tablet) {
+                display: none;
+            }
+            .factors-button-panel {
+                grid-area: factor-btn;
+                display: block;
+                width: 100%;
+
+                .factor-mobile {
+                    display: block;
+                    justify-content: center;
+                    text-align: center;
+                    width: 100%;
+                    box-sizing: border-box;
+                }
+            }
+        }
+        &__k1,
+        &__k2,
+        &__k3,
+        &__gl1,
+        &__gl2,
+        &__be {
+            min-width: 0;
         }
         &__k1 {
             grid-area: k1;
@@ -183,7 +271,6 @@
 
             .doses-sign {
                 grid-area: sign;
-                align-self: center;
             }
             .doses-quick {
                 grid-area: quick;
@@ -193,7 +280,6 @@
             }
             .doses-sum {
                 grid-area: sum;
-                align-self: center;
             }
             .doses-detail-quick1 {
                 grid-area: detail_q1;
@@ -214,6 +300,7 @@
             .dose-label {
                 font-size: 0.7rem;
                 font-weight: 400;
+                vertical-align: baseline;
             }
 
             &.is-open {
@@ -221,6 +308,11 @@
                     "quick sign slow sum"
                     "detail_q1 sign detail_sl1 sum"
                     "detail_q2 sign detail_sl2 sum";
+
+                .doses-sign,
+                .doses-sum {
+                    align-self: center;
+                }
 
                 .doses-detail-quick1,
                 .doses-detail-slow1,

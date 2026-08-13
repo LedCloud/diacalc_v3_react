@@ -1,17 +1,19 @@
 import {useTrans} from "@/Hooks/useTrans.jsx";
 import {router, usePage} from "@inertiajs/react";
-import React, {useEffect, useRef, useState} from "react";
+import React, {useEffect, useMemo, useRef, useState} from "react";
 import {CiCircleChevDown, CiCircleChevUp, CiCircleRemove} from "react-icons/ci";
 import Tooltip from "@/Components/Tooltip.jsx";
 import ContextMenu from "@/Components/ContextMenu.jsx";
 import Modal from "@/Components/Modal.jsx";
 import InputOneLine from "@/Components/InputOneLine.jsx";
+import Checkbox from "@/Components/Checkbox.jsx";
 import {Dialog, DialogPanel, Transition, TransitionChild} from "@headlessui/react";
+import {beginProductDrag, canDropProductOnGroup, endProductDrag, getProductDragPayload, isProductDrag, menuHasProduct} from "@/Components/Dashbord/productDrag.js";
 
 export default function ProductsPane()
 {
     const { __ } = useTrans();
-    const {groups = []} = usePage().props;
+    const {groups = [], menu_items = []} = usePage().props;
     const [selectedGrId, setSelectedGrId] = useState(groups[0]?.id ?? null);
     const [showGroupPopup, setShowGroupPopup] = useState(false);
     const [products, setProducts] = useState([]);
@@ -36,6 +38,8 @@ export default function ProductsPane()
     const [searchResults, setSearchResults] = useState([]);
     const [scrollToProductId, setScrollToProductId] = useState(null);
     const [highlightProductId, setHighlightProductId] = useState(null);
+    const [selectedProductId, setSelectedProductId] = useState(null);
+    const [dropGroupId, setDropGroupId] = useState(null);
     const groupsListRef = useRef(null);
     const menuRef = useRef(null);
     const productsListRef = useRef(null);
@@ -153,6 +157,21 @@ export default function ProductsPane()
     const selectedGroup = groups.find(g => g.id === selectedGrId);
     const canMove = Boolean(selectedGroup) && !selectedGroup.virtual && groups.filter(g => !g.virtual).length > 1;
 
+    const menuItemByProductId = useMemo(() => {
+        const map = new Map();
+        (menu_items ?? []).forEach((item) => {
+            const productId = Number(item.product_id);
+            if (productId > 0) {
+                map.set(productId, item);
+            }
+        });
+        return map;
+    }, [menu_items]);
+
+    useEffect(() => {
+        setSelectedProductId(null);
+    }, [selectedGrId]);
+
     const changeGroup = (direction) => {
         const current = groups.findIndex(g => g.id === selectedGrId);
         if (current < 0 || !groups.length) {
@@ -239,13 +258,144 @@ export default function ProductsPane()
         });
     };
 
+    const findProduct = (productId) => {
+        const id = Number(productId);
+        const inView = products.find(p => Number(p.id) === id);
+        if (inView) {
+            return inView;
+        }
+        for (const list of Object.values(cache)) {
+            const found = (list ?? []).find(p => Number(p.id) === id);
+            if (found) {
+                return found;
+            }
+        }
+        return null;
+    };
+
+    const applyProductGroupMove = (product, fromGroupId, toGroupId) => {
+        const moved = { ...product, product_group_id: toGroupId };
+        const fromKey = String(fromGroupId);
+        const toKey = String(toGroupId);
+        const sameProduct = (p) => Number(p.id) === Number(product.id);
+
+        setCache((prev) => {
+            const next = { ...prev };
+            if (fromGroupId > 0 && next[fromKey]) {
+                next[fromKey] = next[fromKey].filter(p => !sameProduct(p));
+            }
+            if (next['0']) {
+                next['0'] = next['0'].map(p => (sameProduct(p) ? moved : p));
+            }
+            if (next[toKey]) {
+                const without = next[toKey].filter(p => !sameProduct(p));
+                next[toKey] = [...without, moved].sort((a, b) => String(a.name).localeCompare(String(b.name)));
+            }
+            return next;
+        });
+
+        if (Number(selectedGrId) === Number(fromGroupId) && Number(fromGroupId) !== 0) {
+            setProducts(prev => prev.filter(p => !sameProduct(p)));
+        } else if (Number(selectedGrId) === 0) {
+            setProducts(prev => prev.map(p => (sameProduct(p) ? moved : p)));
+        } else if (Number(selectedGrId) === Number(toGroupId)) {
+            setProducts((prev) => {
+                const without = prev.filter(p => !sameProduct(p));
+                return [...without, moved].sort((a, b) => String(a.name).localeCompare(String(b.name)));
+            });
+        }
+    };
+
+    const moveProductToGroup = (productId, targetGroupId, draggedGroupId) => {
+        const targetId = Number(targetGroupId);
+        if (!productId || !targetId) {
+            return;
+        }
+
+        const product = findProduct(productId);
+        const currentGroupId = Number(
+            product?.product_group_id
+            ?? draggedGroupId
+            ?? (Number(selectedGrId) > 0 ? selectedGrId : 0)
+        );
+
+        if (!currentGroupId || currentGroupId === targetId) {
+            return;
+        }
+
+        router.patch(route('dashboard.products.move', productId), {
+            product_group_id: targetId,
+        }, {
+            preserveScroll: true,
+            showProgress: false,
+            onSuccess: () => {
+                const updated = { ...(product ?? { id: productId }), product_group_id: targetId };
+                applyProductGroupMove(updated, currentGroupId, targetId);
+            },
+        });
+    };
+
+    const groupDropHandlers = (group) => {
+        const accepts = canDropProductOnGroup(group);
+        return {
+            onDragEnter: (e) => {
+                if (!isProductDrag(e.dataTransfer) || !accepts) {
+                    return;
+                }
+                e.preventDefault();
+                setDropGroupId(group.id);
+            },
+            onDragOver: (e) => {
+                if (!isProductDrag(e.dataTransfer) || !accepts) {
+                    return;
+                }
+                e.preventDefault();
+                e.dataTransfer.dropEffect = 'move';
+            },
+            onDragLeave: () => {
+                setDropGroupId(current => (current === group.id ? null : current));
+            },
+            onDrop: (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setDropGroupId(null);
+                if (!accepts) {
+                    return;
+                }
+                const { productId, productGroupId } = getProductDragPayload(e.dataTransfer);
+                endProductDrag();
+                if (productId) {
+                    moveProductToGroup(productId, group.id, productGroupId);
+                }
+            },
+        };
+    };
+
     const addProductToMenu = (productId) => {
-        if (!productId) {
+        if (!productId || menuHasProduct(menu_items, productId)) {
             return;
         }
         router.post(route('dashboard.products.add_to_menu', productId), {}, {
             preserveScroll: true,
         });
+    };
+
+    const removeProductFromMenu = (productId) => {
+        const menuItem = menuItemByProductId.get(Number(productId));
+        if (!menuItem) {
+            return;
+        }
+        router.delete(route('dashboard.deleteitem', menuItem.id), {
+            preserveScroll: true,
+        });
+    };
+
+    const toggleProductInMenu = (productId, shouldAdd) => {
+        if (shouldAdd) {
+            addProductToMenu(productId);
+        } else {
+            removeProductFromMenu(productId);
+        }
     };
 
     const openEditDialog = (productId) => {
@@ -373,9 +523,10 @@ export default function ProductsPane()
                     {groups.map(group => (
                         <div
                             key={group.virtual ? 'virtual-freq' : group.id}
-                            className={`group-item ${selectedGrId === group.id ? 'bg-sky-300' : 'bg-slate-50'}`}
+                            className={`group-item ${selectedGrId === group.id ? 'bg-sky-300' : 'bg-slate-50'}${dropGroupId === group.id ? ' is-drop-target' : ''}`}
                             data-group-id={group.id}
                             onClick={() => setSelectedGrId(group.id)}
+                            {...groupDropHandlers(group)}
                         >
                             {group.name}
                         </div>
@@ -415,14 +566,42 @@ export default function ProductsPane()
 
                 <div className="products-pane__products context-menu-box" ref={productsListRef}>
                     {loading ? <p>Loading...</p> : (
-                        products.map(product => (
+                        products.map(product => {
+                            const inMenu = menuItemByProductId.has(Number(product.id));
+                            const isSelected = selectedProductId === product.id;
+                            return (
                             <div
-                                className={`product-item bg-slate-50 border-2 border-slate-600 rounded-lg${highlightProductId === product.id ? ' is-highlighted' : ''}`}
+                                className={`product-item border-2 border-slate-600 rounded-lg${isSelected ? ' bg-sky-300' : ' bg-slate-50'}${highlightProductId === product.id ? ' is-highlighted' : ''}`}
                                 key={product.id}
                                 data-product-id={product.id}
+                                draggable
+                                onClick={() => setSelectedProductId(product.id)}
                                 onContextMenu={(e) => handleContextMenu(e, product.id)}
+                                onDoubleClick={() => addProductToMenu(product.id)}
+                                onDragStart={(e) => beginProductDrag(
+                                    e.dataTransfer,
+                                    product.id,
+                                    product.product_group_id ?? (Number(selectedGrId) > 0 ? selectedGrId : null)
+                                )}
+                                onDragEnd={() => {
+                                    endProductDrag();
+                                    setDropGroupId(null);
+                                }}
                             >
-                                <div className="product-item__name">{product.name}</div>
+                                <div className="product-item__header">
+                                    <div className="product-item__name">{product.name}</div>
+                                    <Checkbox
+                                        className="product-item__in-menu"
+                                        checked={inMenu}
+                                        onClick={(e) => e.stopPropagation()}
+                                        onDoubleClick={(e) => e.stopPropagation()}
+                                        onMouseDown={(e) => e.stopPropagation()}
+                                        onChange={(e) => {
+                                            e.stopPropagation();
+                                            toggleProductInMenu(product.id, e.target.checked);
+                                        }}
+                                    />
+                                </div>
                                 <div className="product-item__description">
                                     <Tooltip text={__('prot')}>{formatter(product.prot)}</Tooltip>-
                                     <Tooltip text={__('fat')}>{formatter(product.fat)}</Tooltip>-
@@ -430,7 +609,8 @@ export default function ProductsPane()
                                     <Tooltip text={__('gi')}>{formatter(product.gi, 0)}</Tooltip>
                                 </div>
                             </div>
-                        ))
+                            );
+                        })
                     )}
                     <ContextMenu
                         menuSettings={menuSettings}
@@ -510,9 +690,10 @@ export default function ProductsPane()
                             <div className="products-pane__popup-list">
                                 {groups.map((gr) => (
                                     <div
-                                        className={`group m-1 px-2 py-1 rounded cursor-pointer ${selectedGrId === gr.id ? 'border-sky-600 bg-sky-300' : 'hover:ring'}`}
+                                        className={`group m-1 px-2 py-1 rounded cursor-pointer ${selectedGrId === gr.id ? 'border-sky-600 bg-sky-300' : 'hover:ring'}${dropGroupId === gr.id ? ' is-drop-target' : ''}`}
                                         key={gr.virtual ? 'virtual-freq' : gr.id}
                                         onClick={() => setSelectedGrId(gr.id)}
+                                        {...groupDropHandlers(gr)}
                                     >{gr.name}</div>
                                 ))}
                             </div>

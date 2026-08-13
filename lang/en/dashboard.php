@@ -53,4 +53,12 @@ return [
     'cancel' => 'Cancel',
     'search_product' => 'Search product',
     'frequently_used' => 'Frequently used',
+    'set_factors' => 'Set factors',
+    'ok' => 'Okay',
+    'counter' => 'Counter',
+    'daily_calorie_counter' => 'Daily calorie counter',
+    'eaten' => 'Eaten',
+    'in_menu' => 'In menu',
+    'total' => 'Total',
+    'limit' => 'Limit',
 ];

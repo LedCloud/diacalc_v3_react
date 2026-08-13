@@ -37,9 +37,9 @@ export default function Dashboard() {
         >
             <Head title="Dashboard" />
 
-            <PageContainer>
+            <PageContainer classNameExternal="dashboard-page">
                 <div className="overflow-hidden bg-white shadow-sm sm:rounded-lg h-full">
-                    <div className="p-6 text-gray-900 h-full min-h-0">
+                    <div className="p-2 text-gray-900 h-full min-h-0">
                         <Accordion items={items}/>
                     </div>
                 </div>

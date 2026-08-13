@@ -33,8 +33,9 @@ class SettingsController extends Controller
     public function update(SettingsPatchRequest $request)
     {
         $validated = $request->validated();
+        $existing = Auth::user()->getSetting('User');
 
-        $settings = array_merge(Auth::user()->getSetting('User'), $validated);
+        $settings = array_merge($existing, $validated);
 
         Auth::user()->putSetting('User', $settings);
 

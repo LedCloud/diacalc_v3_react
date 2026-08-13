@@ -62,6 +62,12 @@ export default function CalculableInput({label, id, valueIn, fractions=0, setHan
                 setValue(e.target.value);
                 //setHandler(e.target.value);
             }}
+            onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    e.currentTarget.blur();
+                }
+            }}
             onBlur={handleBlur}
             placeholder="(15+30)*3 - 10"
         />

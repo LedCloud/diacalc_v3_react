@@ -12,7 +12,7 @@ export default function MenuTabContect({allSettings, setAllSettings, activeTab, 
     };
 
     const changeCaloryLimit = (val) => {
-        setAllSettings({...allSettings, calorie_limit: val});
+        setAllSettings({...allSettings, calory_limit: val});
     };
 
     const setRoundTo = (val) => {
@@ -76,12 +76,12 @@ export default function MenuTabContect({allSettings, setAllSettings, activeTab, 
                         </select>
                     </div>
                     <div className="field">
-                        <InputTwoLines value={allSettings.calorie_limit}
+                        <InputTwoLines value={allSettings.calory_limit}
                                        label={__('calorie_limit')}
-                                       name="calorie_limit"
+                                       name="calory_limit"
                                        onChange={changeCaloryLimit}
                         />
-                        {errors.calorie_limit && <div className="validation-error">{errors.calorie_limit}</div>}
+                        {errors.calory_limit && <div className="validation-error">{errors.calory_limit}</div>}
                     </div>
                 </fieldset>
             </Pane>

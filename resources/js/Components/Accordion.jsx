@@ -31,9 +31,7 @@ export default function Accordion({
                             <span className="accordion__icon" aria-hidden="true" />
                             <span className="accordion__title">{item.title}</span>
                         </button>
-                        {isOpen && (
-                            <div className="accordion__panel">{item.content}</div>
-                        )}
+                        <div className="accordion__panel">{item.content}</div>
                     </div>
                 );
             })}

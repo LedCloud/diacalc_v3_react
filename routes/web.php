@@ -43,7 +43,7 @@ Route::middleware(['auth', \App\Http\Middleware\InjectRouteTranslations::class])
         ->name('dashboard.updatemenu');
     Route::post('/dashboard/updateating', [App\Http\Controllers\DashbordController::class, 'updateFactors'])
         ->name('dashboard.updatefactors');
-    Route::delete('/dashboard/updatemenu/{menu}', [App\Http\Controllers\DashbordController::class, 'delete'])
+    Route::delete('/dashboard/updatemenu/{menu}', [App\Http\Controllers\DashbordController::class, 'deleteitem'])
         ->name('dashboard.deleteitem');
     Route::post('/dashboard/groups/{group}/move', [App\Http\Controllers\DashbordController::class, 'moveGroup'])
         ->name('dashboard.groups.move');
@@ -56,6 +56,8 @@ Route::middleware(['auth', \App\Http\Middleware\InjectRouteTranslations::class])
         ->name('dashboard.products.add_to_menu');
     Route::patch('/dashboard/products/{product}', [App\Http\Controllers\DashbordController::class, 'updateProduct'])
         ->name('dashboard.products.update');
+    Route::patch('/dashboard/products/{product}/move', [App\Http\Controllers\DashbordController::class, 'moveProductToGroup'])
+        ->name('dashboard.products.move');
     Route::delete('/dashboard/products/{product}', [App\Http\Controllers\DashbordController::class, 'deleteProduct'])
         ->name('dashboard.products.delete');
 

@@ -53,4 +53,12 @@ return [
     'cancel' => 'Отмена',
     'search_product' => 'Поиск продукта',
     'frequently_used' => 'Частоиспользуемые',
+    'set_factors' => 'Установить коэффициенты',
+    'ok' => 'Ладно',
+    'counter' => 'Счетчик',
+    'daily_calorie_counter' => 'Счетчик суточных калорий',
+    'eaten' => 'Набрано',
+    'in_menu' => 'В меню',
+    'total' => 'Всего',
+    'limit' => 'Лимит',
 ];

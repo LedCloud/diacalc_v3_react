@@ -17,8 +17,9 @@ class SettingsPatchRequest extends FormRequest
     {
         return [
             'menu_info' => ['numeric', 'integer', 'min:1', 'max:255'],
-            'round_to' => ['numeric', Rule::in(['1', '2', '3']),],
+            'round_to' => ['numeric', Rule::in(['0', '1', '2']),],
             'calorie_limit' => ['numeric', 'integer', 'min:1200', ],
+            'calory_limit' => ['numeric', 'integer', 'min:1200', ],
 
             'is_mmol' => ['numeric', Rule::in(['1', '0'])],
             'is_plasma' => ['numeric', Rule::in(['1', '0'])],
@@ -52,6 +53,11 @@ class SettingsPatchRequest extends FormRequest
         } else {
             $validated['use_freq'] = 0;
         }
+
+        if (array_key_exists('calorie_limit', $validated) && !array_key_exists('calory_limit', $validated)) {
+            $validated['calory_limit'] = $validated['calorie_limit'];
+        }
+        unset($validated['calorie_limit']);
 
         return $validated;
     }

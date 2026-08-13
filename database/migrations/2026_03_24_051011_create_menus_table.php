@@ -19,6 +19,7 @@ return new class extends Migration
             $table->decimal('fat', 7, 4)->default(0);
             $table->decimal('carb', 7, 4)->default(0);
             $table->unsignedTinyInteger('gi')->default(50);
+            $table->unsignedBigInteger('product_id')->nullable(false)->default(0);
 
             $table->float('weight')->default(0);
             $table->boolean('is_snack')->default(false);

@@ -24,17 +24,24 @@ class DashbordController
             'factor.gl1' => 'numeric|min:0.1',
             'factor.gl2' => 'numeric|min:0.1',
             'factor.be' => 'numeric|min:0.1',
+            'factor.eaten' => 'sometimes|integer|min:0',
+            'factor.eaten_date' => 'sometimes|nullable|date_format:Y-m-d',
+            'clear_menu' => 'sometimes|boolean',
         ]);
 
         $factor = $validated['factor'];
 
         auth()->user()->eating->update(
-            collect($factor)->only(['k1', 'k2', 'k3', 'gl1', 'gl2'])->all()
+            collect($factor)->only(['k1', 'k2', 'k3', 'gl1', 'gl2', 'eaten', 'eaten_date'])->all()
         );
 
         $setting = auth()->user()->getSetting('User');
         $setting['be'] = $validated['factor']['be'];
         auth()->user()->putSetting('User', $setting);
+
+        if ($request->boolean('clear_menu')) {
+            auth()->user()->menus()->delete();
+        }
 
         Log::info('Validated', $validated);
 
@@ -47,7 +54,15 @@ class DashbordController
             abort(403);
         }
 
+        $productId = (int) $menu->product_id;
         $menu->delete();
+
+        if ($productId > 0) {
+            Product::query()
+                ->whereKey($productId)
+                ->where('used', '>', 0)
+                ->decrement('used');
+        }
 
         return redirect()->back();
     }
@@ -128,7 +143,7 @@ class DashbordController
 
     public function getProducts(int $group)
     {
-        $fields = ['id', 'name', 'prot', 'fat', 'carb', 'gi'];
+        $fields = ['id', 'name', 'prot', 'fat', 'carb', 'gi', 'product_group_id'];
 
         if ($group === 0) {
             $setting = auth()->user()->getSetting('User');
@@ -181,6 +196,14 @@ class DashbordController
     {
         $this->authorizeUserProduct($product);
 
+        $alreadyInMenu = auth()->user()->menus()
+            ->where('product_id', $product->id)
+            ->exists();
+
+        if ($alreadyInMenu) {
+            return redirect()->back();
+        }
+
         auth()->user()->menus()->create([
             'name' => $product->name,
             'prot' => $product->prot,
@@ -188,7 +211,10 @@ class DashbordController
             'carb' => $product->carb,
             'gi' => $product->gi,
             'weight' => 0,
+            'product_id' => $product->id,
         ]);
+
+        $product->increment('used');
 
         return redirect()->back();
     }
@@ -206,6 +232,28 @@ class DashbordController
         ]);
 
         $product->update($validated);
+
+        return redirect()->back();
+    }
+
+    public function moveProductToGroup(Request $request, Product $product)
+    {
+        $this->authorizeUserProduct($product);
+
+        $validated = $request->validate([
+            'product_group_id' => 'required|integer|min:1',
+        ]);
+
+        $group = ProductGroup::query()
+            ->whereKey($validated['product_group_id'])
+            ->where('user_id', auth()->id())
+            ->firstOrFail();
+
+        if ((int) $product->product_group_id === (int) $group->id) {
+            return redirect()->back();
+        }
+
+        $product->update(['product_group_id' => $group->id]);
 
         return redirect()->back();
     }

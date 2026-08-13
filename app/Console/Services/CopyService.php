@@ -355,7 +355,7 @@ class CopyService
                 ]);
 
             if ($parts->isNotEmpty()) {
-                $user->putSetting('User', $parts->toArray());
+                $user->putSetting('User', $parts->first());
             }
             $bar->advance();
         }
