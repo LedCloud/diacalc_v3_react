@@ -2,11 +2,11 @@ import {useTrans} from "@/Hooks/useTrans.jsx";
 import {router, usePage} from "@inertiajs/react";
 import React, {useEffect, useMemo, useRef, useState} from "react";
 import {CiCircleChevDown, CiCircleChevUp, CiCircleRemove} from "react-icons/ci";
+import {BsBasket, BsBookmarkCheck} from "react-icons/bs";
 import Tooltip from "@/Components/Tooltip.jsx";
 import ContextMenu from "@/Components/ContextMenu.jsx";
 import Modal from "@/Components/Modal.jsx";
 import InputOneLine from "@/Components/InputOneLine.jsx";
-import Checkbox from "@/Components/Checkbox.jsx";
 import {Dialog, DialogPanel, Transition, TransitionChild} from "@headlessui/react";
 import {beginProductDrag, canDropProductOnGroup, endProductDrag, getProductDragPayload, isProductDrag, menuHasProduct} from "@/Components/Dashbord/productDrag.js";
 
@@ -568,6 +568,7 @@ export default function ProductsPane()
                     {loading ? <p>Loading...</p> : (
                         products.map(product => {
                             const inMenu = menuItemByProductId.has(Number(product.id));
+                            const isComplex = Number(product.is_complex) > 0;
                             const isSelected = selectedProductId === product.id;
                             return (
                             <div
@@ -588,25 +589,39 @@ export default function ProductsPane()
                                     setDropGroupId(null);
                                 }}
                             >
-                                <div className="product-item__header">
+                                <div className="product-item__main">
                                     <div className="product-item__name">{product.name}</div>
-                                    <Checkbox
-                                        className="product-item__in-menu"
-                                        checked={inMenu}
-                                        onClick={(e) => e.stopPropagation()}
+                                    <div className="product-item__description">
+                                        <Tooltip text={__('prot')}>{formatter(product.prot)}</Tooltip>-
+                                        <Tooltip text={__('fat')}>{formatter(product.fat)}</Tooltip>-
+                                        <Tooltip text={__('carb')}>{formatter(product.carb)}</Tooltip>-
+                                        <Tooltip text={__('gi')}>{formatter(product.gi, 0)}</Tooltip>
+                                    </div>
+                                </div>
+                                <div className="product-item__marks">
+                                    <button
+                                        type="button"
+                                        className={`product-item__mark${inMenu ? ' is-on' : ''}`}
+                                        aria-label={__('in_menu')}
+                                        aria-pressed={inMenu}
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            toggleProductInMenu(product.id, !inMenu);
+                                        }}
                                         onDoubleClick={(e) => e.stopPropagation()}
                                         onMouseDown={(e) => e.stopPropagation()}
-                                        onChange={(e) => {
-                                            e.stopPropagation();
-                                            toggleProductInMenu(product.id, e.target.checked);
-                                        }}
-                                    />
-                                </div>
-                                <div className="product-item__description">
-                                    <Tooltip text={__('prot')}>{formatter(product.prot)}</Tooltip>-
-                                    <Tooltip text={__('fat')}>{formatter(product.fat)}</Tooltip>-
-                                    <Tooltip text={__('carb')}>{formatter(product.carb)}</Tooltip>-
-                                    <Tooltip text={__('gi')}>{formatter(product.gi, 0)}</Tooltip>
+                                    >
+                                        <Tooltip text={__('in_menu')}>
+                                            <BsBookmarkCheck size="1.1em" />
+                                        </Tooltip>
+                                    </button>
+                                    <span className={`product-item__mark${isComplex ? ' is-on' : ''}`}>
+                                        {isComplex && (
+                                            <Tooltip text={__('complex_product')}>
+                                                <BsBasket size="1.1em" />
+                                            </Tooltip>
+                                        )}
+                                    </span>
                                 </div>
                             </div>
                             );

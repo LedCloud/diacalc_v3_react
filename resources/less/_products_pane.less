@@ -213,7 +213,9 @@
         .product-item {
             padding: 10px;
             display: flex;
-            flex-direction: column;
+            flex-direction: row;
+            align-items: stretch;
+            gap: 8px;
             border: 1px solid #ccc;
             box-sizing: border-box;
             border-radius: @border-radius;
@@ -229,23 +231,54 @@
                 background-color: #bae6fd;
             }
 
-            &__header {
+            &__main {
+                flex: 1 1 auto;
+                min-width: 0;
                 display: flex;
-                align-items: flex-start;
-                justify-content: space-between;
-                gap: 8px;
+                flex-direction: column;
             }
 
             &__name {
                 font-weight: 500;
                 font-size: 1.05rem;
-                flex: 1 1 auto;
-                min-width: 0;
             }
 
-            &__in-menu {
+            &__marks {
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+                align-items: center;
                 flex-shrink: 0;
-                cursor: pointer;
+                min-width: 1.2em;
+            }
+
+            &__mark {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 0;
+                border: 0;
+                background: none;
+                color: inherit;
+                line-height: 1;
+                min-height: 1.1em;
+                opacity: 0;
+                pointer-events: none;
+
+                &.is-on {
+                    opacity: 1;
+                    pointer-events: auto;
+                }
+
+                &[type='button'] {
+                    cursor: pointer;
+                    pointer-events: auto;
+                    opacity: 0.22;
+
+                    &.is-on {
+                        opacity: 1;
+                    }
+                }
             }
 
             &__description {

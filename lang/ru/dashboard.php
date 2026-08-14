@@ -59,6 +59,7 @@ return [
     'daily_calorie_counter' => 'Счетчик суточных калорий',
     'eaten' => 'Набрано',
     'in_menu' => 'В меню',
+    'complex_product' => 'Составной продукт',
     'total' => 'Всего',
     'limit' => 'Лимит',
 ];

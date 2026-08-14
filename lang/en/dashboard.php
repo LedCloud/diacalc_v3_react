@@ -59,6 +59,7 @@ return [
     'daily_calorie_counter' => 'Daily calorie counter',
     'eaten' => 'Eaten',
     'in_menu' => 'In menu',
+    'complex_product' => 'Complex product',
     'total' => 'Total',
     'limit' => 'Limit',
 ];

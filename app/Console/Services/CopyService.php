@@ -240,6 +240,11 @@ class CopyService
             ->get()
             ->groupBy('idgroup');
 
+        $contents = DB::connection('old_diacalc')
+            ->table('backup_cmpl')
+            ->get()
+            ->groupBy('idprod');
+
         $groupsByUser = DB::connection('old_diacalc')
             ->table('backup_groups')
             ->get()
@@ -264,7 +269,7 @@ class CopyService
                 continue;
             }
 
-            DB::transaction(function () use ($groups, $products, $user) {
+            DB::transaction(function () use ($groups, $products, $contents, $user) {
                 $groupRows = $groups->map(fn ($group) => [
                     'name' => $group->name,
                     'user_id' => $user->id,
@@ -274,9 +279,11 @@ class CopyService
                 $firstGroupId = $this->bulkInsertReturningFirstId('product_groups', $groupRows);
 
                 $productRows = [];
+                $oldProductIds = [];
                 foreach ($groups as $i => $group) {
                     $productGroupId = $firstGroupId + $i;
                     foreach ($products->get($group->id, collect()) as $product) {
+                        $oldProductIds[] = $product->id;
                         $productRows[] = [
                             'name' => $product->name,
                             'prot' => $product->prot,
@@ -290,7 +297,32 @@ class CopyService
                     }
                 }
 
-                $this->bulkInsert('products', $productRows);
+                if ($productRows === []) {
+                    return;
+                }
+
+                $firstProductId = $this->bulkInsertReturningFirstId('products', $productRows);
+
+                $contentRows = [];
+                foreach ($oldProductIds as $i => $oldProductId) {
+                    $newProductId = $firstProductId + $i;
+                    $productGroupId = $productRows[$i]['product_group_id'];
+                    foreach ($contents->get($oldProductId, collect()) as $item) {
+                        $contentRows[] = [
+                            'name' => $item->name,
+                            'prot' => $item->prot,
+                            'fat' => $item->fat,
+                            'carb' => $item->carb,
+                            'gi' => $item->gi,
+                            'weight' => $item->weight,
+                            'used' => 0,
+                            'product_group_id' => $productGroupId,
+                            'product_id' => $newProductId,
+                        ];
+                    }
+                }
+
+                $this->bulkInsert('products', $contentRows);
             });
 
             $bar->advance();

@@ -155,10 +155,13 @@ class DashbordController
             $limit = max(0, (int) ($setting['freq_qty'] ?? 0));
 
             $products = Product::query()
+                ->select($fields)
                 ->whereIn('product_group_id', $groupIds)
+                ->whereNull('product_id')
+                ->withExists('content as is_complex')
                 ->orderByDesc('used')
                 ->limit($limit)
-                ->get($fields);
+                ->get();
 
             return response()->json($products);
         }
@@ -168,7 +171,11 @@ class DashbordController
             ->where('user_id', auth()->id())
             ->firstOrFail();
 
-        $products = $productGroup->products()->orderBy('name')->get($fields);
+        $products = $productGroup->products()
+            ->select($fields)
+            ->withExists('content as is_complex')
+            ->orderBy('name')
+            ->get();
 
         return response()->json($products);
     }
@@ -184,6 +191,7 @@ class DashbordController
 
         $products = Product::query()
             ->whereIn('product_group_id', $groupIds)
+            ->whereNull('product_id')
             ->where('name', 'like', $like)
             ->orderBy('name')
             ->limit(50)
