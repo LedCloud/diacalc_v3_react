@@ -9,4 +9,5 @@ return [
     'factors' => 'Коэффициенты',
     'calculations' => 'Расчёты',
     'archive' => 'Архив',
+    'diary' => 'Дневник',
 ];

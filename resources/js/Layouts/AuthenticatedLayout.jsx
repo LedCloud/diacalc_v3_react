@@ -14,7 +14,7 @@ export default function AuthenticatedLayout({ header, children, className = '' }
 
     return (
         <div className={`min-h-screen bg-gray-100 ${className}`}>
-            <nav className="border-b border-gray-100 bg-white">
+            <nav className="relative z-50 border-b border-gray-100 bg-white">
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
 
                     <MainMenu items={menu} user={user}/>

@@ -12,6 +12,10 @@ class MenuStructure
             'name' => 'dashboard',
         ],
         [
+            'route' => 'diary',
+            'name' => 'diary',
+        ],
+        [
             'route' => 'archive',
             'name' => 'archive',
         ],

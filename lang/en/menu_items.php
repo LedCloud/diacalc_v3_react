@@ -9,4 +9,5 @@ return [
     'factors' => 'Factors',
     'calculations' => 'Calculations',
     'archive' => 'Archive',
+    'diary' => 'Diary',
 ];

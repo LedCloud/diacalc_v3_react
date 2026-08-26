@@ -74,6 +74,11 @@ Route::middleware(['auth', \App\Http\Middleware\InjectRouteTranslations::class])
         ]);
     })->name('calculations');
 
+    Route::get('/diary', [\App\Http\Controllers\DiaryController::class, 'index'])
+        ->name('diary');
+    Route::get('/diary/records', [\App\Http\Controllers\DiaryController::class, 'records'])
+        ->name('diary.records');
+
     Route::get('/archive', [\App\Http\Controllers\ArchiveController::class, 'index'])
         ->name('archive');
 

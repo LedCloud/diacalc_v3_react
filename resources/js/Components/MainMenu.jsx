@@ -126,7 +126,7 @@ function SubMenu({item}) {
             {/* Твое кастомное подменю (аналог того, что было в Blade) */}
             {isOpen && (
                 <div
-                    className="absolute top-full left-0 w-48 bg-white border border-gray-200 shadow-lg z-50 py-2 rounded-md">
+                    className="absolute top-full left-0 z-[100] w-48 rounded-md border border-gray-200 bg-white py-2 shadow-lg">
                     {item.submenu.map((sub, idx) => (
                         <div key={idx}>
                             {sub.livewire ? (

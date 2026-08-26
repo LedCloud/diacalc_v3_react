@@ -1,0 +1,28 @@
+<?php
+
+return [
+    'diary' => 'Diary',
+    'events' => 'Events',
+    'add' => 'Add',
+    'page' => 'Page',
+    'page_n' => 'Page :n',
+    'add_page' => 'Add page',
+    'close_panel' => 'Close page',
+    'glucose' => 'BG measurement',
+    'comment' => 'Comment',
+    'start_date' => 'Start date',
+    'end_date' => 'End date',
+    'bg' => 'BG',
+    'dose' => 'D',
+    'dps' => 'DPS',
+    'p' => 'P',
+    'f' => 'F',
+    'c' => 'C',
+    'be' => 'BE',
+    'gi' => 'GI',
+    'gl' => 'GL',
+    'kcal' => 'kcal',
+    'eaten' => 'Eaten',
+    'limit' => 'Limit',
+    'no_records' => 'No records in this range',
+];

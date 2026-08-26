@@ -32,6 +32,9 @@ class CopyService
                     'old_data' => $old_data,
                 ];
                 $existing_user = $users->get($email);
+                /*if ('diacalc@ya.ru' === $email) {
+                    echo "Found\n";
+                }*/
                 if ($existing_user) {
                     $data['exist_id'] = $existing_user->id;
                     $data['user'] = $existing_user;
@@ -39,6 +42,11 @@ class CopyService
 
                 $this->usersMap->put($email, $data);
             }
+            /*if ($this->usersMap->get('diacalc@ya.ru')) {
+                echo "Here it is\n";
+                $dt = $this->usersMap->get('diacalc@ya.ru');
+                print_r($dt['exist_id']);
+            }*/
         }
     }
 
@@ -262,6 +270,10 @@ class CopyService
 
         foreach ($this->usersMap as $userData) {
             $user = $this->findUser($userData);
+            if (!$user) {
+                $bar->advance();
+                continue;
+            }
             $groups = $groupsByUser->get($userData['old_data']->id, collect())->values();
 
             if ($groups->isEmpty()) {
@@ -382,7 +394,6 @@ class CopyService
                     'calory_limit' => $old_settings->calorlimit,
                     'low_level' => $old_settings->shlow,
                     'high_level' => $old_settings->shhigh,
-                    'period' => $old_settings->period,
                     'be' => $old_settings->be ?? 10,
                 ]);
 
@@ -492,12 +503,21 @@ class CopyService
         $user = $userData['user'] ?? false;
 
         if (empty($user) && array_key_exists('exist_id', $userData)) {
+            echo "Find here " . $userData['exist_id'] . "\n";
             $user = User::findOrFail($userData['exist_id']);
         }
 
         if (empty($user)) {
-            $msg = var_export($userData, true);
-            throw new \Exception("User not found: " . $msg);
+            //we don't have user and exist_id also but we have old data which
+            //includes email but it we can try to find the current user
+            if (!empty($userData['old_data']->email)) {
+                $user = User::where('email', $userData['old_data']->email)->first();
+            } else {
+                /*echo "Not found, alas\n";
+                $msg = var_export($userData, true);
+                throw new \Exception("User not found: " . $msg);*/
+                return $user;
+            }
         }
 
         return $user;

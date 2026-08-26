@@ -1,0 +1,56 @@
+/* Базовый контейнер для тултипа */
+.tooltip {
+    position: relative;
+    display: inline-block;
+    cursor: help;
+    /*border-bottom: 1px dashed #666;*/ /* Визуальный маркер, что элемент интерактивен */
+    z-index: 10;
+
+    &:has(.btn) {
+        cursor: pointer;
+    }
+}
+
+/* Общие стили для самого тултипа (::after) и его стрелочки (::before) */
+.tooltip::before,
+.tooltip::after {
+    position: absolute;
+    left: 50%;
+    bottom: 100%;
+    transform: translateX(-50%) translateY(-10px); /* Сдвиг для анимации */
+    opacity: 0;
+    pointer-events: none; /* Чтобы тултип не мешал движениям мыши */
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    z-index: 10000;
+}
+
+/* Окошко тултипа: вытягивает текст из атрибута data-tooltip */
+.tooltip::after {
+    content: attr(data-tooltip); /* Магия CSS: берем текст из HTML-атрибута */
+    background-color: #333;
+    color: #fff;
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-size: 14px;
+    white-space: nowrap; /* Запрещаем перенос строки, если текст короткий */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+/* Стрелочка тултипа (маленький треугольник под окошком) */
+.tooltip::before {
+    content: "";
+    border-width: 6px 6px 0 6px;
+    border-style: solid;
+    border-color: #333 transparent transparent transparent;
+    transform: translateX(-50%) translateY(0); /* Центрируем стрелочку */
+    margin-bottom: -6px; /* Вжимаем треугольник ровно под окошко */
+}
+
+/* Состояние при наведении мыши ИЛИ при фокусе с клавиатуры (Tab) */
+.tooltip:hover::before,
+.tooltip:hover::after,
+.tooltip:focus::before,
+.tooltip:focus::after {
+    opacity: 1;
+    transform: translateX(-50%) translateY(-6px); /* Плавно приподнимаем вверх */
+}

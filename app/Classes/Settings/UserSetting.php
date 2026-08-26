@@ -22,7 +22,6 @@ class UserSetting
         'calorie_near' => self::CALORIE_NEAR,
         'low_level' => 4.0,
         'high_level' => 8,
-        'period' => 7,
         'be' => 10,
     ];
 }
