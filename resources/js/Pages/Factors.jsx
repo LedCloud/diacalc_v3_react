@@ -209,10 +209,12 @@ export default function Factors({ auth }) {
 
             <PageContainer>
                 <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6 factors-layout">
-                    <Form action="/factors" method="patch"
+                    <Form action={route('factors.update')}
+                          method="patch"
                           options={{
                             preserveScroll: true
-                        }}>
+                          }}
+                        >
                         <Pane header={__('factors')} className="factors-layout__pane factors">
                             <fieldset>
                                 <div className="field">

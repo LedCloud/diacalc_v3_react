@@ -27,12 +27,24 @@ function formatDay(dateValue, locale) {
     return new Date(year, month - 1, day).toLocaleDateString(locale);
 }
 
+const isMmol = (settings) => {
+    return Boolean(settings.is_mmol);
+}
+
+const isPlasma = (settings) => {
+    return Boolean(settings.is_plasma);
+}
+
+const formGlConfig = (settings) => {
+    return {
+        mmol: isMmol(settings),
+        plasma: isPlasma(settings)
+    }
+};
+
 function glucoseView(value, settings) {
     const glucose = new Glucose(value);
-    return glucose.getView({
-        mmol: Boolean(+settings.is_mmol),
-        plasma: Boolean(+settings.is_plasma),
-    });
+    return glucose.getView(formGlConfig(settings));
 }
 
 function glucoseTone(value, settings) {

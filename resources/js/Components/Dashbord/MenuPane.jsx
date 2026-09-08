@@ -112,7 +112,7 @@ export default function MenuPane()
     const [glucose2, setGlucose2] = useState(new Glucose(factor.gl2));
     const [ouv, setOUV] = useState(new Glucose(factor.k3));
 
-    const [k1, setK1] = useState(factor.k1);
+    //const [k1, setK1] = useState(factor.k1);
 
     /** Copy a schedule / Factors.jsx row into eating (local + DB). Does not run on page load. */
     const applyFactorToEating = (selected, { onSuccess } = {}) => {

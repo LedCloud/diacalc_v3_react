@@ -1,6 +1,5 @@
 import { Head, Link } from '@inertiajs/react';
 import {useAuth} from "@/Hooks/useAuth.jsx";
-import Dropdown from "@/Components/Dropdown.jsx";
 import ApplicationLogo from "@/Components/ApplicationLogo.jsx";
 import React from "react";
 

@@ -89,7 +89,7 @@ new class extends Component
             );
         }
 
-        redirect()->route('factors', [
+        redirect()->route('factors.index', [
 
         ]);
     }

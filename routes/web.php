@@ -25,17 +25,17 @@ Route::middleware(['auth', \App\Http\Middleware\InjectRouteTranslations::class])
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    Route::get('/settings_react', [\App\Http\Controllers\SettingsController::class, 'index'])
-        ->name('settings');
-    Route::patch('/settings_react', [\App\Http\Controllers\SettingsController::class, 'update'])
-        ->name('settings');
-    Route::post('/settings_react/fill-products', [\App\Http\Controllers\SettingsController::class, 'fillProducts'])
+    Route::get('/settings', [\App\Http\Controllers\SettingsController::class, 'index'])
+        ->name('settings.index');
+    Route::patch('/settings', [\App\Http\Controllers\SettingsController::class, 'update'])
+        ->name('settings.update');
+    Route::post('/settings/fill-products', [\App\Http\Controllers\SettingsController::class, 'fillProducts'])
         ->name('settings.fill_products');
 
     Route::get('/factors', [App\Http\Controllers\FactorsController::class, 'index'])
-        ->name('factors');
+        ->name('factors.index');
     Route::patch('/factors', [App\Http\Controllers\FactorsController::class, 'update'])
-        ->name('factors');
+        ->name('factors.update');
 
     Route::get('/dashboard', [App\Http\Controllers\DashbordController::class, 'index'])
         ->name('dashboard');
@@ -72,15 +72,15 @@ Route::middleware(['auth', \App\Http\Middleware\InjectRouteTranslations::class])
                 'be' => $be,
             ],
         ]);
-    })->name('calculations');
+    })->name('calculations.index');
 
     Route::get('/diary', [\App\Http\Controllers\DiaryController::class, 'index'])
-        ->name('diary');
+        ->name('diary.index');
     Route::get('/diary/records', [\App\Http\Controllers\DiaryController::class, 'records'])
         ->name('diary.records');
 
     Route::get('/archive', [\App\Http\Controllers\ArchiveController::class, 'index'])
-        ->name('archive');
+        ->name('archive.index');
 
     Route::get('/archive/groups/{group}/products', [\App\Http\Controllers\ArchiveController::class, 'getProducts'])
         ->name('archive.get_products');
@@ -100,11 +100,6 @@ Route::middleware(['auth', \App\Http\Middleware\InjectRouteTranslations::class])
 
         return back();
     })->name('language.switch');
-
-    //Route::livewire('/settings', 'pages::settings')->name('settings');
-    //Route::livewire('/factors', 'pages::more.factors')->name('factors');
-    //Route::livewire('/factors/create', 'pages::more.factors.create')->name('factors.create');
-    //Route::livewire('/factors/{id}/edit', 'pages::more.factors.create')->name('factors.edit');
 });
 
 

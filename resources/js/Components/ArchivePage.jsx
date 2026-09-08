@@ -71,18 +71,14 @@ export default function ArchivePage(){
 
         const currentId = String(selectedGrId);
 
-        console.log('GrID', selectedGrId, cache);
-
         if (cache[currentId]) {
-            console.log('Got from cache');
             setProducts(cache[currentId]);
             return;
         }
         setLoading(true);
-        axios.get(`/archive/groups/${currentId}/products`)
+        axios.get(route('archive.get_products', currentId))
             .then(response => {
                 const data = response.data;
-                console.log('Got products', data);
                 // Update products state
                 setProducts(data);
 

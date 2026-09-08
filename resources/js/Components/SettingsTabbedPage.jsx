@@ -27,7 +27,7 @@ export default function SettingsTabbedPane() {
 
         </div>
         <div className="tabs__content">
-            <Form action="/settings_react" className="settings-layout" method="patch">
+            <Form action={route('settings.update')} className="settings-layout" method="patch">
 
                 <MenuTabContect allSettings={allSettings}
                                 setAllSettings={setAllSettings}

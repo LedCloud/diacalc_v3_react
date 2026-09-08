@@ -71,7 +71,7 @@
         </div>
         <div class="button-horizontal">
             <button class="btn settings__btn-save primary" type="submit">{{ __('inputs.save') }}</button>
-            <a class="btn settings__btn-cancel default" href="{{ route("factors") }}">{{ __('inputs.cancel') }}</a>
+            <a class="btn settings__btn-cancel default" href="{{ route("factors.index") }}">{{ __('inputs.cancel') }}</a>
         </div>
         </div>
     </form>

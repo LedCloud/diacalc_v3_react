@@ -1,8 +1,8 @@
 import {useTrans} from "@/Hooks/useTrans.jsx";
 import {router, usePage} from "@inertiajs/react";
 import React, {useEffect, useMemo, useRef, useState} from "react";
-import {CiCircleChevDown, CiCircleChevUp, CiCircleRemove} from "react-icons/ci";
-import {BsBasket, BsBookmarkCheck} from "react-icons/bs";
+import {CiCircleCheck, CiCircleChevDown, CiCircleChevUp, CiCircleRemove} from "react-icons/ci";
+import {BsBasket, BsCircle} from "react-icons/bs";
 import Tooltip from "@/Components/Tooltip.jsx";
 import ContextMenu from "@/Components/ContextMenu.jsx";
 import Modal from "@/Components/Modal.jsx";
@@ -40,6 +40,7 @@ export default function ProductsPane()
     const [highlightProductId, setHighlightProductId] = useState(null);
     const [selectedProductId, setSelectedProductId] = useState(null);
     const [dropGroupId, setDropGroupId] = useState(null);
+    const [canDragProducts, setCanDragProducts] = useState(false);
     const groupsListRef = useRef(null);
     const menuRef = useRef(null);
     const productsListRef = useRef(null);
@@ -171,6 +172,14 @@ export default function ProductsPane()
     useEffect(() => {
         setSelectedProductId(null);
     }, [selectedGrId]);
+
+    useEffect(() => {
+        const media = window.matchMedia('(min-width: 768px) and (pointer: fine)');
+        const syncCanDrag = () => setCanDragProducts(media.matches);
+        syncCanDrag();
+        media.addEventListener('change', syncCanDrag);
+        return () => media.removeEventListener('change', syncCanDrag);
+    }, []);
 
     const changeGroup = (direction) => {
         const current = groups.findIndex(g => g.id === selectedGrId);
@@ -572,18 +581,24 @@ export default function ProductsPane()
                             const isSelected = selectedProductId === product.id;
                             return (
                             <div
-                                className={`product-item border-2 border-slate-600 rounded-lg${isSelected ? ' bg-sky-300' : ' bg-slate-50'}${highlightProductId === product.id ? ' is-highlighted' : ''}`}
+                                className={`product-item border-2 border-slate-600 rounded-lg${isSelected ? ' bg-sky-300' : ' bg-slate-50'}${highlightProductId === product.id ? ' is-highlighted' : ''}${canDragProducts ? ' is-draggable' : ''}`}
                                 key={product.id}
                                 data-product-id={product.id}
-                                draggable
+                                draggable={canDragProducts}
                                 onClick={() => setSelectedProductId(product.id)}
                                 onContextMenu={(e) => handleContextMenu(e, product.id)}
                                 onDoubleClick={() => addProductToMenu(product.id)}
-                                onDragStart={(e) => beginProductDrag(
-                                    e.dataTransfer,
-                                    product.id,
-                                    product.product_group_id ?? (Number(selectedGrId) > 0 ? selectedGrId : null)
-                                )}
+                                onDragStart={(e) => {
+                                    if (!canDragProducts) {
+                                        e.preventDefault();
+                                        return;
+                                    }
+                                    beginProductDrag(
+                                        e.dataTransfer,
+                                        product.id,
+                                        product.product_group_id ?? (Number(selectedGrId) > 0 ? selectedGrId : null)
+                                    );
+                                }}
                                 onDragEnd={() => {
                                     endProductDrag();
                                     setDropGroupId(null);
@@ -612,7 +627,7 @@ export default function ProductsPane()
                                         onMouseDown={(e) => e.stopPropagation()}
                                     >
                                         <Tooltip text={__('in_menu')}>
-                                            <BsBookmarkCheck size="1.1em" />
+                                            {inMenu ? <CiCircleCheck size="1.7em" /> : <BsCircle size="1.5em" />}
                                         </Tooltip>
                                     </button>
                                     <span className={`product-item__mark${isComplex ? ' is-on' : ''}`}>

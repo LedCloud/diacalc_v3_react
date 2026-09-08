@@ -12,11 +12,11 @@ class MenuStructure
             'name' => 'dashboard',
         ],
         [
-            'route' => 'diary',
+            'route' => 'diary.index',
             'name' => 'diary',
         ],
         [
-            'route' => 'archive',
+            'route' => 'archive.index',
             'name' => 'archive',
         ],
         [
@@ -29,9 +29,9 @@ class MenuStructure
         [
             'name' => 'settings',
             'submenu' => [
-                ['route' => 'settings', 'name' => 'settings',],
-                ['route' => 'factors', 'name' => 'factors', ],
-                ['route' => 'calculations', 'name' => 'calculations', ],
+                ['route' => 'settings.index', 'name' => 'settings',],
+                ['route' => 'factors.index', 'name' => 'factors', ],
+                ['route' => 'calculations.index', 'name' => 'calculations', ],
             ],
         ],
     ];

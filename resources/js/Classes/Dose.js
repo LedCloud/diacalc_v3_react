@@ -9,7 +9,6 @@ export default class Dose {
         if (!this.factor.k3 || +this.factor.k3 === 0) {
             return 0;
         }
-        console.log(this.factor, this.prod);
         return (this.factor.gl1 - this.factor.gl2) / this.factor.k3;
     }
 
@@ -25,15 +24,11 @@ export default class Dose {
 
     // Общая доза на углеводы
     getCarbD() {
-        console.log((this.prod.getCarb() * this.factor.k1) / 10);
         return (this.prod.getCarb() * this.factor.k1) / 10;
     }
 
     // Доза на белки и жиры (К2)
     getProtFatD() {
-        console.log(
-            (this.factor.k2 * this.prod.getProt() * 4) / 100 + (this.factor.k2 * this.prod.getFat() * 9) / 100
-        );
         return (
             (this.factor.k2 * this.prod.getProt() * 4) / 100 +
             (this.factor.k2 * this.prod.getFat() * 9) / 100
@@ -42,7 +37,6 @@ export default class Dose {
 
     // Вся доза целиком
     getWholeD() {
-        console.log(this.getDPS(),this.getCarbD(),this.getProtFatD());
         return this.getDPS() + this.getCarbD() + this.getProtFatD();
     }
 

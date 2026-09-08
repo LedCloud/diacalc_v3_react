@@ -41,7 +41,7 @@ class SettingsController extends Controller
 
         session()->flash('notification', 'Settings saved');
 
-        return Redirect::route('settings');
+        return Redirect::route('settings.index');
     }
 
     public function fillProducts()
@@ -72,7 +72,7 @@ class SettingsController extends Controller
 
         session()->flash('notification', 'Products created');
 
-        return Redirect::route('settings');
+        return Redirect::route('settings.index');
     }
 }
 

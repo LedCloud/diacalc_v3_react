@@ -3,7 +3,7 @@ import { Head } from '@inertiajs/react';
 import GlucoseCalculations from "@/Components/Calculations/GlucoseCalculations.jsx";
 import Pane from "@/Components/Pane.jsx";
 import GlycemicInfluence from "@/Components/Calculations/GlycemicInfluence.jsx";
-import React, {useState} from "react";
+import React from "react";
 import BMICorrection from "@/Components/Calculations/BMICorrection.jsx";
 import {useTrans} from "@/Hooks/useTrans.jsx";
 import PageContainer from "@/Components/PageContainer.jsx";

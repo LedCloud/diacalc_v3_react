@@ -43,6 +43,6 @@ class FactorsController extends Controller
 
         session()->flash('notification', 'Updated');
 
-        return Redirect::route('factors');
+        return Redirect::route('factors.index');
     }
 }
