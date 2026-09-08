@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Classes\DiaryRange;
 use App\Classes\Settings\MenuInfo;
 use App\Classes\Settings\UserSetting;
 use App\Http\Requests\DiaryRequest;
@@ -17,6 +18,7 @@ class DiaryController extends Controller
         return Inertia::render('Diary', [
             'settings' => $settings,
             'menu_masks' => MenuInfo::getAllNamed(),
+            'default_days' => DiaryRange::DEFAULT_DAYS,
         ]);
     }
 
