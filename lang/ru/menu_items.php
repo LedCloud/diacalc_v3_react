@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'dashboard' => 'Панель',
+    'meal' => 'Меню',
     'settings' => 'Настройки',
     'languages' => 'Языки',
     'en' => 'Английский',

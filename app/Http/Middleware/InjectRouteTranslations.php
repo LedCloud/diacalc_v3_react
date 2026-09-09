@@ -18,7 +18,7 @@ class InjectRouteTranslations
     {
         Inertia::share([
             'translations' => function () use ($request) {
-                // 1. Fetch the exact route name (e.g., 'factors.index' or 'dashboard')
+                // 1. Fetch the exact route name (e.g., 'factors.index' or 'meal')
                 $routeName = $request->route() ? $request->route()->getName() : null;
 
                 if (!$routeName) {

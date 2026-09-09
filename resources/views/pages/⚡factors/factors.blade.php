@@ -100,7 +100,7 @@
     </div>
         <div class="button-horizontal">
             <button class="btn settings__btn-save primary" type="submit">{{ __('inputs.save') }}</button>
-            <a class="btn settings__btn-calcel default" href="{{ route("dashboard") }}">{{ __('inputs.cancel') }}</a>
+            <a class="btn settings__btn-calcel default" href="{{ route("meal") }}">{{ __('inputs.cancel') }}</a>
         </div>
     </form>
 

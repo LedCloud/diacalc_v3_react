@@ -8,8 +8,8 @@ class MenuStructure
 {
     const structure = [
         [
-            'route' => 'dashboard',
-            'name' => 'dashboard',
+            'route' => 'meal',
+            'name' => 'meal',
         ],
         [
             'route' => 'diary.index',

@@ -9,8 +9,8 @@ export default function MainMenu({ items, user }) {
     const { hasAccess } = useAuth();
 
     return (
-        <div className="flex h-16 justify-between">
-            <div className="flex">
+        <div className="flex h-14 items-center sm:h-16 sm:flex-1 sm:justify-between">
+            <div className="flex items-center">
                 <div className="flex shrink-0 items-center">
                     <Link href="/">
                         <ApplicationLogo className="block h-9 w-auto fill-current text-gray-800"/>
@@ -85,8 +85,7 @@ export default function MainMenu({ items, user }) {
                 </div>
             </div>
         </div>
-    )
-        ;
+    );
 }
 
 // Вспомогательный компонент для обычных ссылок

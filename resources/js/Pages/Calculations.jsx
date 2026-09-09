@@ -36,7 +36,7 @@ export default function Calculations({ auth, user }) {
                             </Pane>
                             <div className="button-horizontal">
                                 <a className="btn settings__btn-save primary w-full md:w-36 mt-3"
-                                href={route('dashboard')}>{__('home')}</a>
+                                href={route('meal')}>{__('home')}</a>
                                 {/*<a className="btn settings__btn-calcel default" href="{{ route(" dashboard") }}">{{
                         __(
                         'inputs.cancel')}}</a>*/}

@@ -16,9 +16,9 @@ Route::get('/', function () {
     ]);
 });
 
-//Route::get('/dashboard', function () {
-//    return Inertia::render('Dashboard');
-//})->middleware(['auth', 'verified'])->name('dashboard');
+//Route::get('/meal', function () {
+//    return Inertia::render('Meal');
+//})->middleware(['auth', 'verified'])->name('meal');
 
 Route::middleware(['auth', \App\Http\Middleware\InjectRouteTranslations::class])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -37,29 +37,29 @@ Route::middleware(['auth', \App\Http\Middleware\InjectRouteTranslations::class])
     Route::patch('/factors', [App\Http\Controllers\FactorsController::class, 'update'])
         ->name('factors.update');
 
-    Route::get('/dashboard', [App\Http\Controllers\DashbordController::class, 'index'])
-        ->name('dashboard');
-    Route::post('/dashboard/updatemenu', [App\Http\Controllers\DashbordController::class, 'update'])
-        ->name('dashboard.updatemenu');
-    Route::post('/dashboard/updateating', [App\Http\Controllers\DashbordController::class, 'updateFactors'])
-        ->name('dashboard.updatefactors');
-    Route::delete('/dashboard/updatemenu/{menu}', [App\Http\Controllers\DashbordController::class, 'deleteitem'])
-        ->name('dashboard.deleteitem');
-    Route::post('/dashboard/groups/{group}/move', [App\Http\Controllers\DashbordController::class, 'moveGroup'])
-        ->name('dashboard.groups.move');
-    Route::get('/dashboard/groups/{group}/products', [App\Http\Controllers\DashbordController::class, 'getProducts'])
-        ->name('dashboard.groups.products')
+    Route::get('/meal', [App\Http\Controllers\MealController::class, 'index'])
+        ->name('meal');
+    Route::post('/meal/updatemenu', [App\Http\Controllers\MealController::class, 'update'])
+        ->name('meal.updatemenu');
+    Route::post('/meal/updateating', [App\Http\Controllers\MealController::class, 'updateFactors'])
+        ->name('meal.updatefactors');
+    Route::delete('/meal/updatemenu/{menu}', [App\Http\Controllers\MealController::class, 'deleteitem'])
+        ->name('meal.deleteitem');
+    Route::post('/meal/groups/{group}/move', [App\Http\Controllers\MealController::class, 'moveGroup'])
+        ->name('meal.groups.move');
+    Route::get('/meal/groups/{group}/products', [App\Http\Controllers\MealController::class, 'getProducts'])
+        ->name('meal.groups.products')
         ->whereNumber('group');
-    Route::get('/dashboard/products/search', [App\Http\Controllers\DashbordController::class, 'searchProducts'])
-        ->name('dashboard.products.search');
-    Route::post('/dashboard/products/{product}/add-to-menu', [App\Http\Controllers\DashbordController::class, 'addProductToMenu'])
-        ->name('dashboard.products.add_to_menu');
-    Route::patch('/dashboard/products/{product}', [App\Http\Controllers\DashbordController::class, 'updateProduct'])
-        ->name('dashboard.products.update');
-    Route::patch('/dashboard/products/{product}/move', [App\Http\Controllers\DashbordController::class, 'moveProductToGroup'])
-        ->name('dashboard.products.move');
-    Route::delete('/dashboard/products/{product}', [App\Http\Controllers\DashbordController::class, 'deleteProduct'])
-        ->name('dashboard.products.delete');
+    Route::get('/meal/products/search', [App\Http\Controllers\MealController::class, 'searchProducts'])
+        ->name('meal.products.search');
+    Route::post('/meal/products/{product}/add-to-menu', [App\Http\Controllers\MealController::class, 'addProductToMenu'])
+        ->name('meal.products.add_to_menu');
+    Route::patch('/meal/products/{product}', [App\Http\Controllers\MealController::class, 'updateProduct'])
+        ->name('meal.products.update');
+    Route::patch('/meal/products/{product}/move', [App\Http\Controllers\MealController::class, 'moveProductToGroup'])
+        ->name('meal.products.move');
+    Route::delete('/meal/products/{product}', [App\Http\Controllers\MealController::class, 'deleteProduct'])
+        ->name('meal.products.delete');
 
     Route::get('/calculations', function () {
         if (auth()) {

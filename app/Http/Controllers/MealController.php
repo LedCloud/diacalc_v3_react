@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 use Illuminate\Http\Request;
 
-class DashbordController
+class MealController
 {
     public function updateFactors(Request $request)
     {
@@ -224,6 +224,8 @@ class DashbordController
 
         $product->increment('used');
 
+        session()->flash('notification', __('meal.added_to_menu'));
+
         return redirect()->back();
     }
 
@@ -315,13 +317,13 @@ class DashbordController
         if ((int) ($setting['use_freq'] ?? 0) === 1) {
             array_unshift($groups, [
                 'id' => 0,
-                'name' => __('dashboard.freq_used'),
+                'name' => __('meal.freq_used'),
                 'sort_order' => null,
                 'virtual' => true,
             ]);
         }
 
-        return Inertia::render('Dashboard',
+        return Inertia::render('Meal',
             [
                 'eating' => auth()->user()->eating,
                 'menu_items' => $menus,

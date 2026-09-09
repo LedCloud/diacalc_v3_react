@@ -7,11 +7,11 @@ import MenuPane from "@/Components/Dashbord/MenuPane.jsx";
 import ProductsPane from "@/Components/Dashbord/ProductsPane.jsx";
 import {useTrans} from "@/Hooks/useTrans.jsx";
 
-export default function Dashboard() {
+export default function Meal() {
     const { __ } = useTrans();
 
     // Stable element identity so Accordion does not receive a fresh <MenuPane />
-    // on every Dashboard render (avoids unnecessary reconcile churn).
+    // on every Meal render (avoids unnecessary reconcile churn).
     const menuPane = useMemo(() => <MenuPane />, []);
     const productsPane = useMemo(() => <ProductsPane />, []);
 
@@ -31,11 +31,11 @@ export default function Dashboard() {
             className="single-page"
             header={
                 <h2 className="text-xl font-semibold leading-tight text-gray-800">
-                    Dashboard
+                    {__('meal')}
                 </h2>
             }
         >
-            <Head title="Dashboard" />
+            <Head title={__('meal')} />
 
             <PageContainer classNameExternal="dashboard-page">
                 <div className="overflow-hidden bg-white shadow-sm sm:rounded-lg h-full">

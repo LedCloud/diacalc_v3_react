@@ -89,7 +89,7 @@ export default function ProductsPane()
         }
 
         setLoading(true);
-        axios.get(route('dashboard.groups.products', selectedGrId))
+        axios.get(route('meal.groups.products', selectedGrId))
             .then(response => {
                 const data = response.data;
                 setProducts(data);
@@ -110,7 +110,7 @@ export default function ProductsPane()
         }
 
         const timer = setTimeout(() => {
-            axios.get(route('dashboard.products.search'), { params: { q: query } })
+            axios.get(route('meal.products.search'), { params: { q: query } })
                 .then(response => setSearchResults(response.data ?? []))
                 .catch(error => {
                     console.error('Error searching products', error);
@@ -197,7 +197,7 @@ export default function ProductsPane()
         if (!canMove || !selectedGroup) {
             return;
         }
-        router.post(route('dashboard.groups.move', selectedGroup.id), {
+        router.post(route('meal.groups.move', selectedGroup.id), {
             direction,
         }, {
             preserveScroll: true,
@@ -332,7 +332,7 @@ export default function ProductsPane()
             return;
         }
 
-        router.patch(route('dashboard.products.move', productId), {
+        router.patch(route('meal.products.move', productId), {
             product_group_id: targetId,
         }, {
             preserveScroll: true,
@@ -384,8 +384,9 @@ export default function ProductsPane()
         if (!productId || menuHasProduct(menu_items, productId)) {
             return;
         }
-        router.post(route('dashboard.products.add_to_menu', productId), {}, {
+        router.post(route('meal.products.add_to_menu', productId), {}, {
             preserveScroll: true,
+            showProgress: false,
         });
     };
 
@@ -394,8 +395,9 @@ export default function ProductsPane()
         if (!menuItem) {
             return;
         }
-        router.delete(route('dashboard.deleteitem', menuItem.id), {
+        router.delete(route('meal.deleteitem', menuItem.id), {
             preserveScroll: true,
+            showProgress: false,
         });
     };
 
@@ -438,7 +440,7 @@ export default function ProductsPane()
             carb: editData.carb,
             gi: editData.gi,
         };
-        router.patch(route('dashboard.products.update', editData.id), payload, {
+        router.patch(route('meal.products.update', editData.id), payload, {
             preserveScroll: true,
             onSuccess: () => {
                 updateProductInLocalState({
@@ -461,7 +463,7 @@ export default function ProductsPane()
         if (!window.confirm(__('confirm_delete_product'))) {
             return;
         }
-        router.delete(route('dashboard.products.delete', productId), {
+        router.delete(route('meal.products.delete', productId), {
             preserveScroll: true,
             onSuccess: () => removeProductFromLocalState(productId),
         });
@@ -627,7 +629,7 @@ export default function ProductsPane()
                                         onMouseDown={(e) => e.stopPropagation()}
                                     >
                                         <Tooltip text={__('in_menu')}>
-                                            {inMenu ? <CiCircleCheck size="1.7em" /> : <BsCircle size="1.5em" />}
+                                            {inMenu ? <CiCircleCheck size="1.7em" className="btn" /> : <BsCircle size="1.5em" className="btn" />}
                                         </Tooltip>
                                     </button>
                                     <span className={`product-item__mark${isComplex ? ' is-on' : ''}`}>

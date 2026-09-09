@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'dashboard' => 'Dashboard',
+    'meal' => 'Meal',
     'settings' => 'Settings',
     'languages' => 'Languages',
     'en' => 'English',

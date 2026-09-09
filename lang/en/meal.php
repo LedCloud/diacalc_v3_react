@@ -1,6 +1,7 @@
 <?php
 
 return [
+    'meal' => 'Meal',
     'menu' => 'Menu',
     'products' => 'Products',
     'carb' => 'Carbohydrates',
@@ -44,6 +45,7 @@ return [
     'move_down' => 'Move down',
     'close' => 'Close',
     'add_to_menu' => 'Add to menu',
+    'added_to_menu' => 'Added to menu',
     'edit' => 'Edit',
     'delete' => 'Delete',
     'edit_product' => 'Edit product',

@@ -128,7 +128,7 @@ export default function MenuPane()
         setData('eating', nextEating);
         setCurrentFactor(selected);
         setOUV(new Glucose(+selected.k3));
-        router.post(route('dashboard.updatefactors'), {
+        router.post(route('meal.updatefactors'), {
             factor: {
                 k1: nextEating.k1,
                 k2: nextEating.k2,
@@ -188,7 +188,7 @@ export default function MenuPane()
         setData('eating', nextEating);
         setData('menu_items', []);
 
-        router.post(route('dashboard.updatefactors'), {
+        router.post(route('meal.updatefactors'), {
             factor: {
                 k1: nextEating.k1,
                 k2: nextEating.k2,
@@ -212,8 +212,9 @@ export default function MenuPane()
     const deleteItem = (id) => {
         const updated = data.menu_items.filter(el => el.id !== id);
         setData('menu_items', updated);  // optimistic UI update
-        router.delete(route('dashboard.deleteitem', id), {
+        router.delete(route('meal.deleteitem', id), {
             preserveScroll: true,
+            showProgress: false,
             onError: () => {
                 // rollback if server fails
                 setData('menu_items', menu_items);
@@ -241,7 +242,7 @@ export default function MenuPane()
         );
         setData('menu_items', updated);
 
-        router.post(route('dashboard.updatemenu'), {
+        router.post(route('meal.updatemenu'), {
             menu_items: updated,
         }, {
             preserveScroll: true,
@@ -296,7 +297,7 @@ export default function MenuPane()
         setActiveField({ id: null, val: '' });
 
         //here we can send the changes to back
-        router.post(route('dashboard.updatefactors'), {
+        router.post(route('meal.updatefactors'), {
             factor: {
                 k1: nextEating.k1,
                 k2: nextEating.k2,
@@ -333,7 +334,7 @@ export default function MenuPane()
         setActiveField({ id: null, val: '' });
 
         //here we can send the changes to back
-        router.post(route('dashboard.updatefactors'), {
+        router.post(route('meal.updatefactors'), {
             factor: {
                 k1: nextEating.k1,
                 k2: nextEating.k2,
@@ -389,7 +390,7 @@ export default function MenuPane()
         setGlucose1(new Glucose(nextEating.gl1));
         setGlucose2(new Glucose(nextEating.gl2));
         setOUV(new Glucose(nextEating.k3));
-        router.post(route('dashboard.updatefactors'), {
+        router.post(route('meal.updatefactors'), {
             factor: {
                 k1: nextEating.k1,
                 k2: nextEating.k2,
@@ -437,8 +438,9 @@ export default function MenuPane()
         if (menuHasProduct(data.menu_items, productId)) {
             return;
         }
-        router.post(route('dashboard.products.add_to_menu', productId), {}, {
+        router.post(route('meal.products.add_to_menu', productId), {}, {
             preserveScroll: true,
+            showProgress: false,
         });
     };
 
@@ -608,19 +610,19 @@ export default function MenuPane()
                     <div className="menu-pane__factors__results">
                         <div className="factors__results__prot results-piece">
                             <div className="factors__results__prot_lbl results-piece__lbl">{__('p')}</div>
-                            <div className="factors__results__prot_vl results-piece__vl">{formatDec(calculation.product.getProt(),0)}</div>
+                            <div className="factors__results__prot_vl results-piece__vl">{formatDec(calculation.product.getProt(),1)}</div>
                         </div>
                         <div className="factors__results__fat results-piece">
                             <div className="factors__results__fat_lbl results-piece__lbl">{__('f')}</div>
-                            <div className="factors__results__fat_vl results-piece__vl">{formatDec(calculation.product.getFat(),0)}</div>
+                            <div className="factors__results__fat_vl results-piece__vl">{formatDec(calculation.product.getFat(),1)}</div>
                         </div>
                         <div className="factors__results__carb results-piece">
                             <div className="factors__results__carb_lbl results-piece__lbl">{__('c')}</div>
-                            <div className="factors__results__carb_vl results-piece__vl">{formatDec(calculation.product.getCarb(),0)}</div>
+                            <div className="factors__results__carb_vl results-piece__vl">{formatDec(calculation.product.getCarb(),1)}</div>
                         </div>
                         <div className="factors__results__gi results-piece">
                             <div className="factors__results__gi_lbl results-piece__lbl">{__('gi')}</div>
-                            <div className="factors__results__gi_vl results-piece__vl">{calculation.product.gi}</div>
+                            <div className="factors__results__gi_vl results-piece__vl">{formatDec(calculation.product.gi,1)}</div>
                         </div>
                         <div className="factors__results__calorie results-piece">
                             <div className="factors__results__calorie_lbl results-piece__lbl">{__('kcal')}</div>
@@ -628,7 +630,7 @@ export default function MenuPane()
                         </div>
                         <div className="factors__results__gl results-piece">
                             <div className="factors__results__gl_lbl results-piece__lbl">{__('gl')}</div>
-                            <div className="factors__results__gl_vl results-piece__vl">{formatDec(calculation.product.getGLIndx(),0)}</div>
+                            <div className="factors__results__gl_vl results-piece__vl">{formatDec(calculation.product.getGLIndx(),1)}</div>
                         </div>
                     </div>
                     <div
