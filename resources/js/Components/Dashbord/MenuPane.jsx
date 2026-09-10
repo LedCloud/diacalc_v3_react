@@ -17,6 +17,17 @@ import Dose from "@/Classes/Dose.js";
 import Tooltip from "@/Components/Tooltip.jsx";
 import FactorsPopup from "@/Components/FactorsPopup.jsx";
 import CalorieCounterPopup from "@/Components/CalorieCounterPopup.jsx";
+import DoseDetailsPopup from "@/Components/Dashbord/DoseDetailsPopup.jsx";
+
+function findLocalHourFactor(options) {
+    if (!options.length) {
+        return null;
+    }
+    const hour = new Date().getHours();
+    return options.find(f => Number(f.id) === hour)
+        ?? options.find(f => parseInt(String(f.time), 10) === hour)
+        ?? options[0];
+}
 
 export default function MenuPane()
 {
@@ -24,6 +35,7 @@ export default function MenuPane()
     const [activeField, setActiveField] = useState({ id: null, val: '' });
     const [showPopup, setShowPopup] = useState(false);
     const [showCaloriePopup, setShowCaloriePopup] = useState(false);
+    const [showDosePopup, setShowDosePopup] = useState(false);
 
     // 1. Props from Inertia (read-only snapshot)
     const {settings, menu_masks, factors, menu_items, eating} = usePage().props;
@@ -69,7 +81,7 @@ export default function MenuPane()
             return null;
         }
         if (factorsByTime) {
-            return factorOptions.find(f => f.now === true) ?? factorOptions[0];
+            return findLocalHourFactor(factorOptions);
         }
         return factorOptions[0];
     });
@@ -112,8 +124,6 @@ export default function MenuPane()
     const [glucose2, setGlucose2] = useState(new Glucose(factor.gl2));
     const [ouv, setOUV] = useState(new Glucose(factor.k3));
 
-    //const [k1, setK1] = useState(factor.k1);
-
     /** Copy a schedule / Factors.jsx row into eating (local + DB). Does not run on page load. */
     const applyFactorToEating = (selected, { onSuccess } = {}) => {
         if (!selected) {
@@ -150,7 +160,7 @@ export default function MenuPane()
         }
 
         const nowRow = factorsByTime
-            ? factorOptions.find(f => f.now === true)
+            ? findLocalHourFactor(factorOptions)
             : null;
 
         const product = new MenuProduct('', 0, 0, 0, 0, 0, 50, 0);
@@ -461,6 +471,24 @@ export default function MenuPane()
             onDragOver={onProductDragOver}
             onDrop={onProductDrop}
         >
+            <div
+                className="menu-pane__dose-summary"
+                role="button"
+                tabIndex={0}
+                onClick={() => setShowDosePopup(true)}
+                onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        setShowDosePopup(true);
+                    }
+                }}
+            >
+                {__('dose_quick')} {formatDec(calculation.dose.getQuick(), 1)}
+                {' + '}
+                {__('dose_slow')} {formatDec(calculation.dose.getSlow(), 1)}
+                {' = '}
+                {__('dose_sum')}{formatDec(calculation.dose.getWholeD(), 1)}
+            </div>
             <div className="menu-pane__actions">
                 <Tooltip text={__('create_product')}>
                     <div className="menu-pane__actions__plus btn"><CiCirclePlus/></div>
@@ -672,6 +700,13 @@ export default function MenuPane()
                 eaten={eatenKcal}
                 menu={menuKcal}
                 limit={calorieLimit}
+            />
+            <DoseDetailsPopup
+                show={showDosePopup}
+                onClose={() => setShowDosePopup(false)}
+                dose={calculation.dose}
+                product={calculation.product}
+                be={data.eating.be}
             />
         </div>
     );

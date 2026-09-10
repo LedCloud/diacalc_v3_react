@@ -9,7 +9,6 @@ class CalculateFactorsService
 {
     public static function calculate($factors)
     {
-        $now = Carbon::now() ->secondsSinceMidnight() / 60;
         // 1. Подготавливаем коэффициенты: сортируем по времени и добавляем минуты от полуночи
         $factors = $factors->map(function ($factor) {
             // Carbon::parse('08:00:00')->secondsSinceMidnight() / 60
@@ -56,9 +55,7 @@ class CalculateFactorsService
             // Форматирование времени строки: '00:00', '01:00' ... '23:00'
             $timeString = sprintf('%02d:00', $t);
 
-            $now_moment = intval($now / 60) == $t;
             $coefsView[$timeString] = [
-                'now' => $now_moment,
                 'id'   => $t,
                 'time' => $timeString,
                 'k1'   => number_format($k1, 2),

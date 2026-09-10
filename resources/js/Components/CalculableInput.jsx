@@ -55,7 +55,7 @@ export default function CalculableInput({label, id, valueIn, fractions=0, setHan
         {label && <label htmlFor={id}>{label}</label>}
         <input
             id={id}
-            type="text"
+            type="tel"
             value={value}
             onFocus={(e) => e.target.select()}
             onChange={(e) => {

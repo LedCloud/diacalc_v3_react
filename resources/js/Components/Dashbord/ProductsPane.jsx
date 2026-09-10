@@ -1,6 +1,7 @@
 import {useTrans} from "@/Hooks/useTrans.jsx";
 import {router, usePage} from "@inertiajs/react";
-import React, {useEffect, useMemo, useRef, useState} from "react";
+import React, {useCallback, useEffect, useMemo, useRef, useState} from "react";
+import {useHorizontalSwipe} from "@/Hooks/useHorizontalSwipe.js";
 import {CiCircleCheck, CiCircleChevDown, CiCircleChevUp, CiCircleRemove} from "react-icons/ci";
 import {BsBasket, BsCircle} from "react-icons/bs";
 import Tooltip from "@/Components/Tooltip.jsx";
@@ -181,7 +182,7 @@ export default function ProductsPane()
         return () => media.removeEventListener('change', syncCanDrag);
     }, []);
 
-    const changeGroup = (direction) => {
+    const changeGroup = useCallback((direction) => {
         const current = groups.findIndex(g => g.id === selectedGrId);
         if (current < 0 || !groups.length) {
             return;
@@ -191,7 +192,9 @@ export default function ProductsPane()
         } else {
             setSelectedGrId(current === groups.length - 1 ? groups[0].id : groups[current + 1].id);
         }
-    };
+    }, [groups, selectedGrId]);
+
+    const swipeHandlers = useHorizontalSwipe(changeGroup);
 
     const moveGroup = (direction) => {
         if (!canMove || !selectedGroup) {
@@ -489,7 +492,7 @@ export default function ProductsPane()
     }
 
     return (
-        <div className="products-pane">
+        <div className="products-pane" {...swipeHandlers}>
             <div className="products-pane__groups-compact">
                 <div
                     className="products-pane__groups-compact__left btn p-3"

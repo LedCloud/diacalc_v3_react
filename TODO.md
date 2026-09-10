@@ -136,8 +136,17 @@ server {
         return new LegacyUserResource($user); 
     }
     ```
-  ####Summary of Benefits📦
+  #### Summary of Benefits📦
   * **Single Migration History:** Running php artisan migrate updates the system globally. It is physically impossible to forget to run or update a migration on a secondary app.
   * **💸 Low Maintenance:** You only have one codebase to secure, optimize, back up, and monitor.
   * **🛠️ Seamless Decoupling:** The legacy client thinks it is talking to an old system, your React frontend interacts with modern routing profiles, and the database engine remains beautifully unified underneath.
 
+---
+ * [x] Fix the page height on meal
+ * [x] Fix the nutrition bar when no weight is set, the same about nutrition panel on the right
+ * [x] Add slide between groups like in diary
+ * [x] use phone keyboard for the weight input in menu
+ * [x] maybe put the dose info to the top for the mobile
+ * [x] detailed dose info is ugly, think how to change it
+ * [x] what the heck is with the time in factors selector? It's always 4 hours before the current time
+ * [x] create a dedicated maintance page

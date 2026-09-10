@@ -28,7 +28,7 @@ export default function Meal() {
 
     return (
         <AuthenticatedLayout
-            className="single-page"
+            className="single-page single-page--tall-accordion"
             header={
                 <h2 className="text-xl font-semibold leading-tight text-gray-800">
                     {__('meal')}
