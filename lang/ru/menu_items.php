@@ -10,4 +10,5 @@ return [
     'calculations' => 'Расчёты',
     'archive' => 'Архив',
     'diary' => 'Дневник',
+    'profile' => 'Профиль',
 ];

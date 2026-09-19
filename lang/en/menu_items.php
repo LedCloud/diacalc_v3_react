@@ -10,4 +10,5 @@ return [
     'calculations' => 'Calculations',
     'archive' => 'Archive',
     'diary' => 'Diary',
+    'profile' => 'Profile',
 ];

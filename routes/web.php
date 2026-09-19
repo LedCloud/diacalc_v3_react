@@ -7,18 +7,12 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Illuminate\Http\Request;
 
-Route::get('/', function () {
+Route::middleware([\App\Http\Middleware\InjectRouteTranslations::class])->get('/', function () {
     return Inertia::render('Welcome', [
         'canLogin' => Route::has('login'),
         'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
     ]);
-});
-
-//Route::get('/meal', function () {
-//    return Inertia::render('Meal');
-//})->middleware(['auth', 'verified'])->name('meal');
+})->name('root_route');
 
 Route::middleware(['auth', \App\Http\Middleware\InjectRouteTranslations::class])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -101,7 +95,5 @@ Route::middleware(['auth', \App\Http\Middleware\InjectRouteTranslations::class])
         return back();
     })->name('language.switch');
 });
-
-
 
 require __DIR__.'/auth.php';

@@ -3,11 +3,14 @@ import PrimaryButton from '@/Components/PrimaryButton';
 import TextInput from '@/Components/TextInput';
 import GuestLayout from '@/Layouts/GuestLayout';
 import { Head, useForm } from '@inertiajs/react';
+import {useTrans} from "@/Hooks/useTrans.jsx";
 
 export default function ForgotPassword({ status }) {
     const { data, setData, post, processing, errors } = useForm({
         email: '',
     });
+
+    const { __ } = useTrans();
 
     const submit = (e) => {
         e.preventDefault();
@@ -17,13 +20,10 @@ export default function ForgotPassword({ status }) {
 
     return (
         <GuestLayout>
-            <Head title="Forgot Password" />
+            <Head title={__('forgot_password')} />
 
-            <div className="mb-4 text-sm text-gray-600">
-                Forgot your password? No problem. Just let us know your email
-                address and we will email you a password reset link that will
-                allow you to choose a new one.
-            </div>
+            <div className="mb-4 text-sm text-gray-600"
+                 dangerouslySetInnerHTML={{__html: __('forgot_msg')}} />
 
             {status && (
                 <div className="mb-4 text-sm font-medium text-green-600">
@@ -46,7 +46,7 @@ export default function ForgotPassword({ status }) {
 
                 <div className="mt-4 flex items-center justify-end">
                     <PrimaryButton className="ms-4" disabled={processing}>
-                        Email Password Reset Link
+                        {__('reset_btn')}
                     </PrimaryButton>
                 </div>
             </form>

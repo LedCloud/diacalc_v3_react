@@ -150,3 +150,8 @@ server {
  * [x] detailed dose info is ugly, think how to change it
  * [x] what the heck is with the time in factors selector? It's always 4 hours before the current time
  * [x] create a dedicated maintance page
+
+---
+ * [ ] on the desktop the vertical results panel should be resized
+ * [ ] it's time to create a menu menu and a menu for products, also to view & edit the complex products
+ * [ ] translations on recovery password form. Check the email sending works.

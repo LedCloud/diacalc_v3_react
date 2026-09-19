@@ -4,9 +4,11 @@ import {Link} from "@inertiajs/react";
 import ApplicationLogo from "@/Components/ApplicationLogo.jsx";
 import Dropdown from "@/Components/Dropdown.jsx";
 import {useAuth} from "@/Hooks/useAuth.jsx";
+import {useTrans} from "@/Hooks/useTrans.jsx";
 
 export default function MainMenu({ items, user }) {
     const { hasAccess } = useAuth();
+    const { __ } = useTrans();
 
     return (
         <div className="flex h-14 items-center sm:h-16 sm:flex-1 sm:justify-between">
@@ -64,13 +66,13 @@ export default function MainMenu({ items, user }) {
                             <Dropdown.Link
                                 href={route('profile.edit')}
                             >
-                                Profile
+                                {__('profile')}
                             </Dropdown.Link>
                             {hasAccess('platform.index') && (
                                 <Dropdown.Link
                                     href={route('platform.index')}
                                 >
-                                    Admin Panel**
+                                    {__('admin_panel')}
                                 </Dropdown.Link>
                             )}
                             <Dropdown.Link
@@ -78,7 +80,7 @@ export default function MainMenu({ items, user }) {
                                 method="post"
                                 as="button"
                             >
-                                Log Out
+                                {__('log_out')}
                             </Dropdown.Link>
                         </Dropdown.Content>
                     </Dropdown>
