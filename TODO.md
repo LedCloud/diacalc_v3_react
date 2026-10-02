@@ -155,3 +155,11 @@ server {
  * [ ] on the desktop the vertical results panel should be resized
  * [ ] it's time to create a menu menu and a menu for products, also to view & edit the complex products
  * [ ] translations on recovery password form. Check the email sending works.
+
+---
+Mobile detection https://github.com/reefki/laravel-device-detector
+Discussion with Gemini https://share.google/aimode/n6JpONoDmUXPSJXnO
+
+---
+New tasks of 02.10.2026<br>
+[ ] Separate interface for mobile and ability to select the view type
