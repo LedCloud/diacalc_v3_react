@@ -46,52 +46,6 @@
         }
     }
 
-    &__toolbar {
-        display: flex;
-        flex-direction: row;
-        gap: 4px;
-        align-items: baseline;
-        flex-shrink: 0;
-
-        &--popup {
-            border-bottom: 1px solid #e2e8f0;
-            padding-bottom: 6px;
-            margin-bottom: 4px;
-        }
-
-        &__moves {
-            display: flex;
-            flex-direction: row;
-            gap: 4px;
-            align-items: center;
-        }
-
-        &__close {
-            margin-left: auto;
-            align-self: flex-end;
-        }
-
-        &__btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            padding: 2px;
-            border: none;
-            background: transparent;
-            cursor: pointer;
-            color: #334155;
-
-            &:disabled {
-                opacity: 0.35;
-                cursor: not-allowed;
-            }
-
-            &:not(:disabled):hover {
-                color: #0f172a;
-            }
-        }
-    }
-
     &__popup-list {
         max-height: 60vh;
         overflow-y: auto;
@@ -109,7 +63,7 @@
         overflow-y: auto;
         display: flex;
         flex-direction: column;
-        gap: 3px;
+        gap: 1px;
 
         .group-item {
             border: 1px solid #ccc;
@@ -207,7 +161,7 @@
         flex: 1 1 auto;
         display: flex;
         flex-direction: column;
-        gap: 7px;
+        gap: 2px;
         overflow-y: auto;
 
         .product-item {

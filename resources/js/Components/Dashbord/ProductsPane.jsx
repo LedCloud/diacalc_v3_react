@@ -2,9 +2,10 @@ import {useTrans} from "@/Hooks/useTrans.jsx";
 import {router, usePage} from "@inertiajs/react";
 import React, {useCallback, useEffect, useMemo, useRef, useState} from "react";
 import {useHorizontalSwipe} from "@/Hooks/useHorizontalSwipe.js";
-import {CiCircleCheck, CiCircleChevDown, CiCircleChevUp, CiCircleRemove} from "react-icons/ci";
+import {CiCircleCheck, CiCircleChevDown, CiCircleChevUp, CiCircleRemove, CiCirclePlus, CiEdit, CiTrash, CiSquareRemove} from "react-icons/ci";
 import {BsBasket, BsCircle} from "react-icons/bs";
 import Tooltip from "@/Components/Tooltip.jsx";
+import MenuBar from "@/Components/MenuBar.jsx";
 import ContextMenu from "@/Components/ContextMenu.jsx";
 import Modal from "@/Components/Modal.jsx";
 import InputOneLine from "@/Components/InputOneLine.jsx";
@@ -204,6 +205,7 @@ export default function ProductsPane()
             direction,
         }, {
             preserveScroll: true,
+            showProgress: false,
         });
     };
 
@@ -509,30 +511,45 @@ export default function ProductsPane()
             </div>
 
             <div className="products-pane__groups-full">
-                <div className="products-pane__toolbar">
-                    <Tooltip text={__('move_up')}>
-                        <button
-                            type="button"
-                            className="products-pane__toolbar__btn"
-                            disabled={!canMove}
-                            onClick={() => moveGroup('up')}
-                            aria-label={__('move_up')}
-                        >
-                            <CiCircleChevUp size="1.8em" />
-                        </button>
-                    </Tooltip>
-                    <Tooltip text={__('move_down')}>
-                        <button
-                            type="button"
-                            className="products-pane__toolbar__btn"
-                            disabled={!canMove}
-                            onClick={() => moveGroup('down')}
-                            aria-label={__('move_down')}
-                        >
-                            <CiCircleChevDown size="1.8em" />
-                        </button>
-                    </Tooltip>
-                </div>
+                <MenuBar>
+                    <MenuBar.Button
+                        plain
+                        tooltip={canMove ? __('move_up') : false}
+                        disabled={!canMove}
+                        onClick={() => moveGroup('up')}
+                        icon={<CiCircleChevUp size="1.8em" />}
+                    />
+                    <MenuBar.Button
+                        plain
+                        tooltip={canMove ? __('move_down') : false}
+                        disabled={!canMove}
+                        onClick={() => moveGroup('down')}
+                        icon={<CiCircleChevDown size="1.8em" />}
+                    />
+                    <MenuBar.Separator />
+                    <MenuBar.Button
+                        plain
+                        tooltip={canMove ? __('add') : false}
+                        disabled={!canMove}
+                        onClick={() => createGroup()}
+                        icon={<CiCirclePlus size="1.8em" />}
+                    />
+                    <MenuBar.Button
+                        plain
+                        tooltip={canMove ? __('edit') : false}
+                        disabled={!canMove}
+                        onClick={() => editGroup()}
+                        icon={<CiEdit size="1.8em" />}
+                    />
+                    <MenuBar.Separator />
+                    <MenuBar.Button
+                        plain
+                        tooltip={canMove ? __('delete') : false}
+                        disabled={!canMove}
+                        onClick={() => deleteGroup()}
+                        icon={<CiTrash size="1.8em" />}
+                    />
+                </MenuBar>
                 <div className="products-pane__list" ref={groupsListRef}>
                     {groups.map(group => (
                         <div
@@ -684,44 +701,53 @@ export default function ProductsPane()
                         <DialogPanel
                             className="mb-6 transform overflow-hidden rounded-lg bg-white shadow-xl transition-all sm:mx-auto sm:w-full md:w-1/2 lg:w-1/3"
                         >
-                            <div className="products-pane__toolbar products-pane__toolbar--popup px-2 pt-2">
-                                <div className="products-pane__toolbar__moves">
-                                    <Tooltip text={__('move_up')}>
-                                        <button
-                                            type="button"
-                                            className="products-pane__toolbar__btn"
-                                            disabled={!canMove}
-                                            onClick={() => moveGroup('up')}
-                                            aria-label={__('move_up')}
-                                        >
-                                            <CiCircleChevUp size="1.8em" />
-                                        </button>
-                                    </Tooltip>
-                                    <Tooltip text={__('move_down')}>
-                                        <button
-                                            type="button"
-                                            className="products-pane__toolbar__btn"
-                                            disabled={!canMove}
-                                            onClick={() => moveGroup('down')}
-                                            aria-label={__('move_down')}
-                                        >
-                                            <CiCircleChevDown size="1.8em" />
-                                        </button>
-                                    </Tooltip>
-                                </div>
-                                <div className="products-pane__toolbar__close">
-                                    <Tooltip text={__('close')}>
-                                        <button
-                                            type="button"
-                                            className="products-pane__toolbar__btn"
-                                            onClick={closeGroupPopup}
-                                            aria-label={__('close')}
-                                        >
-                                            <CiCircleRemove size="1.8em" />
-                                        </button>
-                                    </Tooltip>
-                                </div>
-                            </div>
+                            <MenuBar className="menu-bar--popup px-2 pt-2">
+                                <MenuBar.Button
+                                    plain
+                                    tooltip={__('move_up')}
+                                    disabled={!canMove}
+                                    onClick={() => moveGroup('up')}
+                                    icon={<CiCircleChevUp size="1.8em" />}
+                                />
+                                <MenuBar.Button
+                                    plain
+                                    tooltip={__('move_down')}
+                                    disabled={!canMove}
+                                    onClick={() => moveGroup('down')}
+                                    icon={<CiCircleChevDown size="1.8em" />}
+                                />
+                                <MenuBar.Separator />
+                                <MenuBar.Button
+                                    plain
+                                    tooltip={canMove ? __('add') : false}
+                                    disabled={!canMove}
+                                    onClick={() => createGroup()}
+                                    icon={<CiCirclePlus size="1.8em" />}
+                                />
+                                <MenuBar.Button
+                                    plain
+                                    tooltip={canMove ? __('edit') : false}
+                                    disabled={!canMove}
+                                    onClick={() => editGroup()}
+                                    icon={<CiEdit size="1.8em" />}
+                                />
+                                <MenuBar.Separator />
+                                <MenuBar.Button
+                                    plain
+                                    tooltip={canMove ? __('delete') : false}
+                                    disabled={!canMove}
+                                    onClick={() => deleteGroup()}
+                                    icon={<CiTrash size="1.8em" />}
+                                />
+                                <MenuBar.Spacer />
+                                <MenuBar.Separator />
+                                <MenuBar.Button
+                                    plain
+                                    tooltip={__('close')}
+                                    onClick={closeGroupPopup}
+                                    icon={<CiSquareRemove size="1.8em" />}
+                                />
+                            </MenuBar>
                             <div className="products-pane__popup-list">
                                 {groups.map((gr) => (
                                     <div
