@@ -1,8 +1,11 @@
 <?php
 
 return [
-    'clear_current' => 'Clear existing data of this type before copy',
-    'clear_current_all' => 'Clear existing data before each copy step',
+    'keep' => 'Emails of users whose current data is left unchanged. Comma-separated or repeated.',
+    'keep_all' => 'Emails of users left unchanged. Every other mapped user is cleared and recreated.',
+    'confirm_recreate' => 'All current user data will be cleared and the users will be recreated. Continue?',
+    'cancelled' => 'Operation cancelled. No data was changed.',
+    'keep_unknown' => 'Keep email not found among users being copied: :email',
     'clearing' => 'Clearing current data: :type',
     'copy' => 'Copy :type',
     'no_absent_users' => 'No absent users',

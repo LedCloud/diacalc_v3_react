@@ -6,30 +6,32 @@ use App\Console\Services\CopyService;
 
 class DiacalcCommon extends DiacalcCopyCommand
 {
-    protected $signature = 'diacalc:all {--clear-current}';
+    protected $signature = 'diacalc:all {--keep=*}';
 
     protected function descriptionKey(): string
     {
         return 'migration.commands.all';
     }
 
-    protected function clearCurrentOptionDescription(): string
+    protected function keepOptionDescription(): string
     {
-        return __('migration.clear_current_all');
+        return __('migration.keep_all');
     }
 
     public function handle(CopyService $copyService): int
     {
-        $clear = $this->shouldClearCurrent();
+        if (($keep = $this->confirmedKeepEmails()) === null) {
+            return self::FAILURE;
+        }
 
-        $copyService->copyArchive($this, $clear);
-        $copyService->copyUsers($this, $clear);
-        $copyService->copyEatings($this, $clear);
-        $copyService->copyFactors($this, $clear);
-        $copyService->copySettings($this, $clear);
-        $copyService->copyProducts($this, $clear);
-        $copyService->copyMenus($this, $clear);
-        $copyService->copyDiary($this, $clear);
+        $copyService->copyArchive($this, $keep);
+        $copyService->copyUsers($this, $keep);
+        $copyService->copyEatings($this, $keep);
+        $copyService->copyFactors($this, $keep);
+        $copyService->copySettings($this, $keep);
+        $copyService->copyProducts($this, $keep);
+        $copyService->copyMenus($this, $keep);
+        $copyService->copyDiary($this, $keep);
 
         $this->newLine();
 

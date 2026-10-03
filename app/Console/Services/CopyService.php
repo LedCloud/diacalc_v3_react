@@ -14,6 +14,11 @@ class CopyService
 {
     protected ?Collection $usersMap = null;
 
+    /** @var list<string> */
+    protected array $keepEmails = [];
+
+    protected bool $keepWarningsShown = false;
+
     protected function initUsersmap()
     {
         if ($this->usersMap === null) {
@@ -50,14 +55,59 @@ class CopyService
         }
     }
 
-    public function copyDiary(Command $command, bool $clearCurrent = false)
+    /**
+     * @param  list<string>  $keepEmails
+     */
+    protected function prepare(Command $command, array $keepEmails): void
     {
+        $this->keepEmails = $this->normalizeEmails($keepEmails);
         $this->initUsersmap();
 
-        if ($clearCurrent) {
-            $command->line(__('migration.clearing', ['type' => __('migration.types.diary')]));
-            $this->clearForMappedUsers('diary');
+        if ($this->keepWarningsShown) {
+            return;
         }
+
+        $this->keepWarningsShown = true;
+        $known = $this->usersMap
+            ->keys()
+            ->map(fn ($email) => strtolower((string) $email))
+            ->all();
+
+        foreach ($this->keepEmails as $email) {
+            if (! in_array($email, $known, true)) {
+                $command->warn(__('migration.keep_unknown', ['email' => $email]));
+            }
+        }
+    }
+
+    /**
+     * @param  list<string>  $emails
+     * @return list<string>
+     */
+    protected function normalizeEmails(array $emails): array
+    {
+        $normalized = [];
+        foreach ($emails as $email) {
+            $email = strtolower(trim((string) $email));
+            if ($email !== '') {
+                $normalized[$email] = $email;
+            }
+        }
+
+        return array_values($normalized);
+    }
+
+    protected function isKept(string $email): bool
+    {
+        return in_array(strtolower($email), $this->keepEmails, true);
+    }
+
+    public function copyDiary(Command $command, array $keepEmails = [])
+    {
+        $this->prepare($command, $keepEmails);
+
+        $command->line(__('migration.clearing', ['type' => __('migration.types.diary')]));
+        $this->clearForMappedUsers('diary');
 
         $diary_records_count = DB::connection('old_diacalc')
             ->table('diary')
@@ -67,7 +117,11 @@ class CopyService
         $bar = $command->getOutput()->createProgressBar($diary_records_count);
         $bar->start();
 
-        foreach ($this->usersMap as $userData) {
+        foreach ($this->usersMap as $email => $userData) {
+            if ($this->isKept($email)) {
+                continue;
+            }
+
             $user = $this->findUser($userData);
             $userId = $user->id;
 
@@ -191,19 +245,17 @@ class CopyService
         $this->bulkInsert('diary_glucoses', $glucoseRows);
     }
 
-    public function copyMenus(Command $command, bool $clearCurrent = false)
+    public function copyMenus(Command $command, array $keepEmails = [])
     {
-        $this->initUsersmap();
+        $this->prepare($command, $keepEmails);
 
         $menus = DB::connection('old_diacalc')
             ->table('backup_menus')
             ->get()
             ->groupBy('iduser');
 
-        if ($clearCurrent) {
-            $command->line(__('migration.clearing', ['type' => __('migration.types.menus')]));
-            $this->clearForMappedUsers('menus');
-        }
+        $command->line(__('migration.clearing', ['type' => __('migration.types.menus')]));
+        $this->clearForMappedUsers('menus');
 
         $command->line(__('migration.copy', ['type' => __('migration.types.menus')]));
 
@@ -213,7 +265,12 @@ class CopyService
         $now = now();
         $rows = [];
 
-        foreach ($this->usersMap as $userData) {
+        foreach ($this->usersMap as $email => $userData) {
+            if ($this->isKept($email)) {
+                $bar->advance();
+                continue;
+            }
+
             $user = $this->findUser($userData);
 
             foreach ($menus->get($userData['old_data']->id, collect()) as $menuItem) {
@@ -239,9 +296,9 @@ class CopyService
         $command->newLine();
     }
 
-    public function copyProducts(Command $command, bool $clearCurrent = false)
+    public function copyProducts(Command $command, array $keepEmails = [])
     {
-        $this->initUsersmap();
+        $this->prepare($command, $keepEmails);
 
         $products = DB::connection('old_diacalc')
             ->table('backup_prods')
@@ -258,17 +315,20 @@ class CopyService
             ->get()
             ->groupBy('iduser');
 
-        if ($clearCurrent) {
-            $command->line(__('migration.clearing', ['type' => __('migration.types.products')]));
-            $this->clearForMappedUsers('product_groups');
-        }
+        $command->line(__('migration.clearing', ['type' => __('migration.types.products')]));
+        $this->clearForMappedUsers('product_groups');
 
         $command->line(__('migration.copy', ['type' => __('migration.types.products')]));
 
         $bar = $command->getOutput()->createProgressBar($this->usersMap->count());
         $bar->start();
 
-        foreach ($this->usersMap as $userData) {
+        foreach ($this->usersMap as $email => $userData) {
+            if ($this->isKept($email)) {
+                $bar->advance();
+                continue;
+            }
+
             $user = $this->findUser($userData);
             if (!$user) {
                 $bar->advance();
@@ -344,9 +404,9 @@ class CopyService
         $command->newLine();
     }
 
-    public function copySettings(Command $command, bool $clearCurrent = false)
+    public function copySettings(Command $command, array $keepEmails = [])
     {
-        $this->initUsersmap();
+        $this->prepare($command, $keepEmails);
 
         /** @var Collection $settings */
         $settings = DB::connection('old_diacalc')
@@ -360,15 +420,13 @@ class CopyService
             return;
         }
 
-        if ($clearCurrent) {
-            $command->line(__('migration.clearing', ['type' => __('migration.types.settings')]));
-            $userIds = $this->mappedUserIds();
-            if ($userIds !== []) {
-                DB::table('settings')
-                    ->whereIn('user_id', $userIds)
-                    ->where('key', 'User')
-                    ->delete();
-            }
+        $command->line(__('migration.clearing', ['type' => __('migration.types.settings')]));
+        $userIds = $this->userIdsToReplace();
+        if ($userIds !== []) {
+            DB::table('settings')
+                ->whereIn('user_id', $userIds)
+                ->where('key', 'User')
+                ->delete();
         }
 
         $command->line(__('migration.copy', ['type' => __('migration.types.settings')]));
@@ -376,7 +434,12 @@ class CopyService
         $bar = $command->getOutput()->createProgressBar($settings->count());
         $bar->start();
 
-        foreach ($this->usersMap as $userData) {
+        foreach ($this->usersMap as $email => $userData) {
+            if ($this->isKept($email)) {
+                $bar->advance();
+                continue;
+            }
+
             $user = $this->findUser($userData);
             $parts = $settings->get($userData['old_data']->id, collect([]))
                 ->map(fn ($old_settings) => [
@@ -407,11 +470,14 @@ class CopyService
         $command->newLine();
     }
 
-    public function copyFactors(Command $command, bool $clearCurrent = false)
+    public function copyFactors(Command $command, array $keepEmails = [])
     {
-        $this->initUsersmap();
+        $this->prepare($command, $keepEmails);
 
-        $old_ids = $this->usersMap->pluck('old_data.id')->toArray();
+        $old_ids = $this->usersMap
+            ->reject(fn ($row, $email) => $this->isKept($email))
+            ->pluck('old_data.id')
+            ->toArray();
 
         $factorAll = DB::connection('old_diacalc')
             ->table('coefs')
@@ -419,10 +485,8 @@ class CopyService
             ->get()
             ->groupBy('iduser');
 
-        if ($clearCurrent) {
-            $command->line(__('migration.clearing', ['type' => __('migration.types.factors')]));
-            $this->clearForMappedUsers('factors');
-        }
+        $command->line(__('migration.clearing', ['type' => __('migration.types.factors')]));
+        $this->clearForMappedUsers('factors');
 
         $command->line(__('migration.copy', ['type' => __('migration.types.factors')]));
 
@@ -430,7 +494,12 @@ class CopyService
         $bar->start();
 
         $rows = [];
-        foreach ($this->usersMap as $userData) {
+        foreach ($this->usersMap as $email => $userData) {
+            if ($this->isKept($email)) {
+                $bar->advance();
+                continue;
+            }
+
             $user = $this->findUser($userData);
             $parts = $factorAll->get($userData['old_data']->id, collect());
 
@@ -452,16 +521,14 @@ class CopyService
         $command->newLine();
     }
 
-    public function copyEatings(Command $command, bool $clearCurrent = false)
+    public function copyEatings(Command $command, array $keepEmails = [])
     {
-        $this->initUsersmap();
+        $this->prepare($command, $keepEmails);
 
-        if ($clearCurrent) {
-            $command->line(__('migration.clearing', ['type' => __('migration.types.eatings')]));
-            $userIds = $this->mappedUserIds();
-            if ($userIds !== []) {
-                Eating::whereIn('user_id', $userIds)->delete();
-            }
+        $command->line(__('migration.clearing', ['type' => __('migration.types.eatings')]));
+        $userIds = $this->userIdsToReplace();
+        if ($userIds !== []) {
+            Eating::whereIn('user_id', $userIds)->delete();
         }
 
         $command->line(__('migration.copy', ['type' => __('migration.types.eatings')]));
@@ -471,7 +538,12 @@ class CopyService
 
         $now = now();
         $rows = [];
-        foreach ($this->usersMap as $userData) {
+        foreach ($this->usersMap as $email => $userData) {
+            if ($this->isKept($email)) {
+                $bar->advance();
+                continue;
+            }
+
             $user = $this->findUser($userData);
             $eatenDate = $userData['old_data']->eatendate ?? null;
 
@@ -523,13 +595,14 @@ class CopyService
         return $user;
     }
 
-    public function copyArchive(Command $command, bool $clearCurrent = false)
+    public function copyArchive(Command $command, array $keepEmails = [])
     {
-        if ($clearCurrent) {
-            $command->line(__('migration.clearing', ['type' => __('migration.types.archive')]));
-            DB::table('arc_products')->delete();
-            DB::table('arc_groups')->delete();
-        }
+        // Archive rows are shared, so $keepEmails does not apply.
+        unset($keepEmails);
+
+        $command->line(__('migration.clearing', ['type' => __('migration.types.archive')]));
+        DB::table('arc_products')->delete();
+        DB::table('arc_groups')->delete();
 
         $command->line(__('migration.copy', ['type' => __('migration.types.archive')]));
 
@@ -587,24 +660,22 @@ class CopyService
         $command->newLine();
     }
 
-    public function copyUsers(Command $command, bool $clearCurrent = false)
+    public function copyUsers(Command $command, array $keepEmails = [])
     {
-        $this->initUsersmap();
+        $this->prepare($command, $keepEmails);
 
-        if ($clearCurrent) {
-            $command->line(__('migration.clearing', ['type' => __('migration.types.users')]));
-            $userIds = $this->mappedUserIds();
-            if ($userIds !== []) {
-                User::whereIn('id', $userIds)->delete();
-            }
-            $this->usersMap = null;
-            $this->initUsersmap();
+        $command->line(__('migration.clearing', ['type' => __('migration.types.users')]));
+        $userIds = $this->userIdsToReplace();
+        if ($userIds !== []) {
+            User::whereIn('id', $userIds)->delete();
         }
+        $this->usersMap = null;
+        $this->initUsersmap();
 
         $command->line(__('migration.copy', ['type' => __('migration.types.users')]));
 
         $absentUsers = $this->usersMap->filter(
-            fn ($r) => !isset($r['exist_id']) && !isset($r['user'])
+            fn ($r, $email) => !isset($r['exist_id']) && !isset($r['user']) && !$this->isKept($email)
         );
         if ($absentUsers->isEmpty()) {
             $command->line(__('migration.no_absent_users'));
@@ -653,9 +724,10 @@ class CopyService
         }
     }
 
-    protected function mappedUserIds(): array
+    protected function userIdsToReplace(): array
     {
         return $this->usersMap
+            ->reject(fn ($row, $email) => $this->isKept((string) $email))
             ->pluck('exist_id')
             ->filter()
             ->values()
@@ -664,7 +736,7 @@ class CopyService
 
     protected function clearForMappedUsers(string $table): void
     {
-        $userIds = $this->mappedUserIds();
+        $userIds = $this->userIdsToReplace();
         if ($userIds === []) {
             return;
         }

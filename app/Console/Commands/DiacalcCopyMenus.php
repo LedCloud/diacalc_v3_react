@@ -6,7 +6,7 @@ use App\Console\Services\CopyService;
 
 class DiacalcCopyMenus extends DiacalcCopyCommand
 {
-    protected $signature = 'diacalc:copy-menus {--clear-current}';
+    protected $signature = 'diacalc:copy-menus {--keep=*}';
 
     protected function descriptionKey(): string
     {
@@ -15,7 +15,11 @@ class DiacalcCopyMenus extends DiacalcCopyCommand
 
     public function handle(CopyService $copyService): int
     {
-        $copyService->copyMenus($this, $this->shouldClearCurrent());
+        if (($keep = $this->confirmedKeepEmails()) === null) {
+            return self::FAILURE;
+        }
+
+        $copyService->copyMenus($this, $keep);
 
         return self::SUCCESS;
     }
