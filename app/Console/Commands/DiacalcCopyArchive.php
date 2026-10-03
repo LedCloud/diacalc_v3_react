@@ -6,7 +6,7 @@ use App\Console\Services\CopyService;
 
 class DiacalcCopyArchive extends DiacalcCopyCommand
 {
-    protected $signature = 'diacalc:copy-archive {--clear-current}';
+    protected $signature = 'diacalc:copy-archive {--keep=*}';
 
     protected function descriptionKey(): string
     {
@@ -15,7 +15,7 @@ class DiacalcCopyArchive extends DiacalcCopyCommand
 
     public function handle(CopyService $copyService): int
     {
-        $copyService->copyArchive($this, $this->shouldClearCurrent());
+        $copyService->copyArchive($this, $this->keptEmails());
 
         return self::SUCCESS;
     }

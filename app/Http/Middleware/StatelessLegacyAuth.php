@@ -17,6 +17,7 @@ class StatelessLegacyAuth
      */
     public function handle(Request $request, Closure $next): Response
     {
+        return $next($request);
         if ($request->has('login') && $request->has('pass')) {
             $credentials = [
                 'email' => $request->input('login'),

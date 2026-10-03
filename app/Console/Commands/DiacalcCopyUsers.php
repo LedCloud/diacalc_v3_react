@@ -6,7 +6,7 @@ use App\Console\Services\CopyService;
 
 class DiacalcCopyUsers extends DiacalcCopyCommand
 {
-    protected $signature = 'diacalc:copy-users {--clear-current}';
+    protected $signature = 'diacalc:copy-users {--keep=*}';
 
     protected function descriptionKey(): string
     {
@@ -15,7 +15,11 @@ class DiacalcCopyUsers extends DiacalcCopyCommand
 
     public function handle(CopyService $copyService): int
     {
-        $copyService->copyUsers($this, $this->shouldClearCurrent());
+        if (($keep = $this->confirmedKeepEmails()) === null) {
+            return self::FAILURE;
+        }
+
+        $copyService->copyUsers($this, $keep);
 
         return self::SUCCESS;
     }

@@ -6,7 +6,7 @@ use App\Console\Services\CopyService;
 
 class DiacalcCopyFactors extends DiacalcCopyCommand
 {
-    protected $signature = 'diacalc:copy-factors {--clear-current}';
+    protected $signature = 'diacalc:copy-factors {--keep=*}';
 
     protected function descriptionKey(): string
     {
@@ -15,7 +15,11 @@ class DiacalcCopyFactors extends DiacalcCopyCommand
 
     public function handle(CopyService $copyService): int
     {
-        $copyService->copyFactors($this, $this->shouldClearCurrent());
+        if (($keep = $this->confirmedKeepEmails()) === null) {
+            return self::FAILURE;
+        }
+
+        $copyService->copyFactors($this, $keep);
 
         return self::SUCCESS;
     }
