@@ -14,7 +14,8 @@ export default function Tooltip({ text, children }) {
     const [visible, setVisible] = useState(false);
     const [coords, setCoords] = useState({ top: 0, left: 0 });
     const triggerRef = useRef(null);
-    const cursor = childHasBtnClass(children) ? 'pointer' : 'help';
+    const wrapsButton = childHasBtnClass(children);
+    const cursor = wrapsButton ? 'pointer' : 'help';
 
     const handleMouseEnter = () => {
         if (!triggerRef.current) return;
@@ -42,7 +43,11 @@ export default function Tooltip({ text, children }) {
                 onMouseLeave={handleMouseLeave}
                 onFocus={handleMouseEnter}
                 onBlur={handleMouseLeave}
-                style={{ display: 'inline-block', cursor }}
+                style={{
+                    display: wrapsButton ? 'inline-flex' : 'inline-block',
+                    alignItems: 'center',
+                    cursor,
+                }}
                 tabIndex="-1"
                 className="tooltip"
             >

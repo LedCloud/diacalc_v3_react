@@ -14,7 +14,7 @@ import Scale from "@/Components/Scale.jsx";
 import Glucose from "@/Classes/Glucose.js";
 import {usePage, router} from '@inertiajs/react'
 import Dose from "@/Classes/Dose.js";
-import Tooltip from "@/Components/Tooltip.jsx";
+import MenuBar from "@/Components/MenuBar.jsx";
 import FactorsPopup from "@/Components/FactorsPopup.jsx";
 import CalorieCounterPopup from "@/Components/CalorieCounterPopup.jsx";
 import DoseDetailsPopup from "@/Components/Dashbord/DoseDetailsPopup.jsx";
@@ -212,7 +212,7 @@ export default function MenuPane()
             clear_menu: true,
         }, {
             preserveScroll: true,
-            showProgress: false,
+            //showProgress: false,
             onError: () => {
                 setData('menu_items', items);
             },
@@ -256,6 +256,7 @@ export default function MenuPane()
             menu_items: updated,
         }, {
             preserveScroll: true,
+            showProgress: false,
         });
     };
 
@@ -318,6 +319,7 @@ export default function MenuPane()
             },
         }, {
             preserveScroll: true,
+            showProgress: false,
         });
     };
 
@@ -355,6 +357,7 @@ export default function MenuPane()
             },
         }, {
             preserveScroll: true,
+            showProgress: false,
         });
     };
 
@@ -411,6 +414,7 @@ export default function MenuPane()
             },
         }, {
             preserveScroll: true,
+            showProgress: false,
         });
         setShowPopup(false);
     };
@@ -489,29 +493,25 @@ export default function MenuPane()
                 {' = '}
                 {__('dose_sum')}{formatDec(calculation.dose.getWholeD(), 1)}
             </div>
-            <div className="menu-pane__actions">
-                <Tooltip text={__('create_product')}>
-                    <div className="menu-pane__actions__plus btn"><CiCirclePlus/></div>
-                </Tooltip>
-                <Tooltip text={__('record_diary')}>
-                    <div className="menu-pane__actions__diary btn"><GoPencil/></div>
-                </Tooltip>
-                <div
-                    className={`menu-pane__actions__counter ${meterClass}`}
-                    role="button"
-                    tabIndex={0}
-                    onClick={() => setShowCaloriePopup(true)}
-                    onKeyDown={(e) => {
-                        if (e.key === 'Enter' || e.key === ' ') {
-                            e.preventDefault();
-                            setShowCaloriePopup(true);
-                        }
-                    }}
-                >{eating.eaten} + {formatDec(calculation.product.getCalor(), 0)} / {settings.calory_limit}</div>
-                <Tooltip text={__('trash_menu')}>
-                    <div className="menu-pane__actions__trash btn" onClick={clearMenu}><CiTrash/></div>
-                </Tooltip>
-            </div>
+            <MenuBar>
+                <MenuBar.Button tooltip={__('create_product')} icon={<CiCirclePlus />} />
+                <MenuBar.Button tooltip={__('record_diary')} icon={<GoPencil />} />
+                <MenuBar.Fill>
+                    <div
+                        className={`menu-pane__actions__counter ${meterClass}`}
+                        role="button"
+                        tabIndex={0}
+                        onClick={() => setShowCaloriePopup(true)}
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                                e.preventDefault();
+                                setShowCaloriePopup(true);
+                            }
+                        }}
+                    >{eating.eaten} + {formatDec(calculation.product.getCalor(), 0)} / {settings.calory_limit}</div>
+                </MenuBar.Fill>
+                <MenuBar.Button tooltip={__('trash_menu')} onClick={clearMenu} icon={<CiTrash />} />
+            </MenuBar>
             <div className="menu-pane__items">
                 {(data.menu_items ?? []).map(item => {
                     const product = new MenuProduct(item.name, item.id, item.weight,
