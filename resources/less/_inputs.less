@@ -58,6 +58,11 @@ input, select {
         border-bottom-left-radius: @border-radius;
         border-bottom-right-radius: @border-radius;
     }
+
+    &.group-name-field {
+        grid-template-columns: auto minmax(0, 1fr);
+        column-gap: 12px;
+    }
 }
 .vertical-group {
     display: grid;

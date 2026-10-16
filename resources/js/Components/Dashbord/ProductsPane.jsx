@@ -31,6 +31,10 @@ export default function ProductsPane()
         carb: '',
         gi: '',
     });
+    const [editGroup, setEditGroup] = useState({
+        id: null,
+        name: ''
+    });
     const [menuSettings, setMenuSettings] = useState({
         visible: false,
         x: 0,
@@ -47,6 +51,7 @@ export default function ProductsPane()
     const menuRef = useRef(null);
     const productsListRef = useRef(null);
     const searchBoxRef = useRef(null);
+    const [showGroupEditDlg, setShowGroupEditDlg] = useState(false);
 
     const formatter = (val, fractions = 1) => {
         const parsed = parseFloat(val);
@@ -182,6 +187,26 @@ export default function ProductsPane()
         media.addEventListener('change', syncCanDrag);
         return () => media.removeEventListener('change', syncCanDrag);
     }, []);
+
+    useEffect(() => {
+        if (!showGroupEditDlg && !showGroupPopup) {
+            return;
+        }
+        const onKeyDown = (e) => {
+            if (e.key !== 'Escape') {
+                return;
+            }
+            e.preventDefault();
+            e.stopPropagation();
+            if (showGroupEditDlg) {
+                setShowGroupEditDlg(false);
+                return;
+            }
+            setShowGroupPopup(false);
+        };
+        document.addEventListener('keydown', onKeyDown, true);
+        return () => document.removeEventListener('keydown', onKeyDown, true);
+    }, [showGroupEditDlg, showGroupPopup]);
 
     const changeGroup = useCallback((direction) => {
         const current = groups.findIndex(g => g.id === selectedGrId);
@@ -493,6 +518,55 @@ export default function ProductsPane()
         return <div className="products-pane" />;
     }
 
+    const createGroup = () => {
+        setEditGroup({ id: null, name: '' });
+        setShowGroupEditDlg(true);
+    };
+
+    const editGroupDlg = () => {
+        if (!canMove || !selectedGroup) {
+            return;
+        }
+        setEditGroup({
+            id: selectedGroup.id,
+            name: selectedGroup.name,
+        });
+        setShowGroupEditDlg(true);
+    };
+
+    const deleteGroup = () => {
+        if (!selectedGroup || selectedGroup.virtual) {
+            return;
+        }
+        if (!window.confirm(__('confirm_delete_group'))) {
+            return;
+        }
+        router.delete(route('meal.groups.destroy', selectedGroup.id), {
+            preserveScroll: true,
+            showProgress: true,
+        });
+    };
+
+    const updateGroupField = (value) => {
+        setEditGroup(prev => ({ ...prev, name: value }));
+    };
+
+    const saveGroup = () => {
+        const name = editGroup.name.trim();
+        if (!name) {
+            return;
+        }
+        const payload = { name };
+        if (editGroup.id) {
+            payload.id = editGroup.id;
+        }
+        router.post(route('meal.groups.store'), payload, {
+            preserveScroll: true,
+            showProgress: true,
+            onSuccess: () => setShowGroupEditDlg(false),
+        });
+    };
+
     return (
         <div className="products-pane" {...swipeHandlers}>
             <div className="products-pane__groups-compact">
@@ -530,7 +604,7 @@ export default function ProductsPane()
                     <MenuBar.Button
                         plain
                         tooltip={canMove ? __('add') : false}
-                        disabled={!canMove}
+                        disabled={false}
                         onClick={() => createGroup()}
                         icon={<CiCirclePlus size="1.8em" />}
                     />
@@ -538,7 +612,7 @@ export default function ProductsPane()
                         plain
                         tooltip={canMove ? __('edit') : false}
                         disabled={!canMove}
-                        onClick={() => editGroup()}
+                        onClick={() => editGroupDlg()}
                         icon={<CiEdit size="1.8em" />}
                     />
                     <MenuBar.Separator />
@@ -728,7 +802,7 @@ export default function ProductsPane()
                                     plain
                                     tooltip={canMove ? __('edit') : false}
                                     disabled={!canMove}
-                                    onClick={() => editGroup()}
+                                    onClick={() => editGroupDlg()}
                                     icon={<CiEdit size="1.8em" />}
                                 />
                                 <MenuBar.Separator />
@@ -740,7 +814,7 @@ export default function ProductsPane()
                                     icon={<CiTrash size="1.8em" />}
                                 />
                                 <MenuBar.Spacer />
-                                <MenuBar.Separator />
+                                <MenuBar.DoubleSeparator />
                                 <MenuBar.Button
                                     plain
                                     tooltip={__('close')}
@@ -814,6 +888,45 @@ export default function ProductsPane()
                     >{__('cancel')}</button>
                 </div>
             </Modal>
+
+            <Modal
+                show={showGroupEditDlg}
+                onClose={() => setShowGroupEditDlg(false)}
+                header={editGroup.id ? __('edit_group') : __('add_group')}
+                maxWidth="md"
+            >
+                <div
+                    className="py-3 px-4 flex flex-col gap-2"
+                    onKeyDown={(e) => {
+                        if (e.key !== 'Enter') {
+                            return;
+                        }
+                        e.preventDefault();
+                        saveGroup();
+                    }}
+                >
+                    <InputOneLine
+                        className="group-name-field"
+                        value={editGroup.name}
+                        name="group_name"
+                        label={__('name')}
+                        onChange={updateGroupField}
+                    />
+                </div>
+                <div className="flex gap-3 p-2">
+                    <button
+                        type="button"
+                        className="px-2 py-1 w-24 rounded ring-2 ring-offset-1 ring-blue-400 bg-sky-300"
+                        onClick={saveGroup}
+                    >{__('save')}</button>
+                    <button
+                        type="button"
+                        className="px-2 py-1 w-24 rounded ring-2 ring-offset-1 ring-slate-400 bg-white"
+                        onClick={() => setShowGroupEditDlg(false)}
+                    >{__('cancel')}</button>
+                </div>
+            </Modal>
+
         </div>
     );
 }

@@ -28,7 +28,11 @@ function Button({
 }
 
 function Separator() {
-    return <span className="menu-bar__separator" role="separator" aria-hidden="true" />;
+    return <span className="menu-bar__separator"  aria-hidden="true" />;
+}
+
+function DoubleSeparator() {
+    return <span className="menu-bar__double_separator" role="separator" aria-hidden="true" />;
 }
 
 function Spacer() {
@@ -51,3 +55,4 @@ MenuBar.Button = Button;
 MenuBar.Separator = Separator;
 MenuBar.Spacer = Spacer;
 MenuBar.Fill = Fill;
+MenuBar.DoubleSeparator = DoubleSeparator;

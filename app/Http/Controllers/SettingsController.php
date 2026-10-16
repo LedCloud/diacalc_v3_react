@@ -47,7 +47,7 @@ class SettingsController extends Controller
     public function fillProducts()
     {
         auth()->user()->productGroups()->delete();
-        $gr = \App\Models\ArcGroup::all();
+        $gr = \App\Models\ArcGroup::with('arc_products')->get();
         $sort_indx = 1;
         foreach ($gr as $g) {
             $group = ProductGroup::create([

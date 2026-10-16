@@ -39,6 +39,10 @@ Route::middleware(['auth', \App\Http\Middleware\InjectRouteTranslations::class])
         ->name('meal.updatefactors');
     Route::delete('/meal/updatemenu/{menu}', [App\Http\Controllers\MealController::class, 'deleteitem'])
         ->name('meal.deleteitem');
+    Route::post('/meal/groups', [App\Http\Controllers\MealController::class, 'storeGroup'])
+        ->name('meal.groups.store');
+    Route::delete('/meal/groups/{group}', [App\Http\Controllers\MealController::class, 'destroyGroup'])
+        ->name('meal.groups.destroy');
     Route::post('/meal/groups/{group}/move', [App\Http\Controllers\MealController::class, 'moveGroup'])
         ->name('meal.groups.move');
     Route::get('/meal/groups/{group}/products', [App\Http\Controllers\MealController::class, 'getProducts'])

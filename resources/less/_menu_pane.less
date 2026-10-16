@@ -215,25 +215,38 @@
             grid-area: results;
             display: grid;
             grid-template-columns: 1fr;
-            padding: 3px;
+            /*padding: 3px;*/
             border: @border-color solid 1px;
             border-radius: @border-radius;
 
             .results-piece {
                 display: grid;
-                grid-template-columns: 2.5em 1fr;
-                padding: 1px 2px;
-                align-items: baseline;
-                .results-piece {
-                    &__lbl {
-                        text-align: left;
-                    }
-                    &__vl {
-                        font-weight: 500;
-                        font-size: 0.99rem;
-                        padding: 1px 2px 1px 4px;
-                        text-align: right;
-                    }
+                width: 100%;
+                grid-template-columns: 1fr 1fr;
+                grid-template-areas:
+                    ". ."
+                    "value value"
+                    "legend .";
+                align-items: center;
+                justify-items: center;
+                padding: 2px;
+
+                &__lbl {
+                    font-size: 0.9rem;
+                    color: #555;
+                    line-height: 1;
+                    text-align: left;
+                    grid-area: legend;
+                    justify-self: start;
+                    align-self: end;
+                }
+                &__vl {
+                    font-weight: 500;
+                    font-size: 0.99rem;
+                    line-height: 1.2;
+                    white-space: nowrap;
+                    grid-area: value;
+                    justify-self: center;
                 }
                 &:nth-child(odd) {
                     background-color: #dddddd;
@@ -276,7 +289,7 @@
             /* Closed: one row so + / = align with the values */
             grid-template-areas: "quick sign slow sum";
             grid-template-columns: auto auto auto auto;
-            gap: 5px;
+            gap: 10px;
             justify-content: center;
             align-items: baseline;
             justify-items: center;

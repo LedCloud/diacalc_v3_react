@@ -23,7 +23,7 @@
 * [ ] think over the ability to start an app without the network
 * [ ] then we should cache the remote data in the local storage
 * [ ] once we get fresh data, put them to local storage to have the last actual copy of data
-* [ ] do not forget the refresh the browser cache once the app code is updated
+* [x] do not forget the refresh the browser cache once the app code is updated
   <br>read more https://share.google/aimode/WocWEZTAiEWYePC98
 
 
@@ -152,9 +152,10 @@ server {
  * [x] create a dedicated maintance page
 
 ---
- * [ ] on the desktop the vertical results panel should be resized
- * [ ] it's time to create a menu menu and a menu for products, also to view & edit the complex products
- * [ ] translations on recovery password form. Check the email sending works.
+ * [x] on the desktop the vertical results panel should be resized
+ * [ ] it's time to create ~~a menu menu~~ and **a menu for products, also to view & edit the complex products**
+ * partly done
+ * [ ] translations on recovery password form. Check the email sending works. **Emails MUST be a separate task.**
 
 ---
 Mobile detection https://github.com/reefki/laravel-device-detector
@@ -163,3 +164,7 @@ Discussion with Gemini https://share.google/aimode/n6JpONoDmUXPSJXnO
 ---
 New tasks of 02.10.2026<br>
 [ ] Separate interface for mobile and ability to select the view type
+  - [ ] Edit products
+    * [ ] Float precision
+    * [ ] Edit complex
+  - [ ] Products menu bar

@@ -7,9 +7,10 @@ use App\Models\Menu;
 use App\Models\Product;
 use App\Models\ProductGroup;
 use App\Services\CalculateFactorsService;
-use Illuminate\Support\Facades\Log;
-use Inertia\Inertia;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\Rule;
+use Inertia\Inertia;
 
 class MealController
 {
@@ -137,6 +138,56 @@ class MealController
                 ->where('user_id', auth()->id())
                 ->update(['sort_order' => $sortOrder + 1]);
         }
+
+        return redirect()->back();
+    }
+
+    public function storeGroup(Request $request)
+    {
+        $validated = $request->validate([
+            'id' => 'nullable|integer|min:1',
+            'name' => 'required|string|max:255',
+        ]);
+
+        if (!empty($validated['id'])) {
+            $group = ProductGroup::query()
+                ->whereKey($validated['id'])
+                ->where('user_id', auth()->id())
+                ->firstOrFail();
+
+            $group->update(['name' => $validated['name']]);
+
+            return redirect()->back();
+        }
+
+        $sortOrder = (int) ProductGroup::query()
+            ->where('user_id', auth()->id())
+            ->max('sort_order') + 1;
+
+        ProductGroup::create([
+            'name' => $validated['name'],
+            'sort_order' => $sortOrder,
+            'user_id' => auth()->id(),
+        ]);
+
+        return redirect()->back();
+    }
+
+    public function destroyGroup(Request $request, ProductGroup $group)
+    {
+        $validated = $request->merge(['id' => $group->id])->validate([
+            'id' => [
+                'required',
+                'integer',
+                Rule::exists('product_groups', 'id')->where('user_id', auth()->id()),
+            ],
+        ]);
+
+        ProductGroup::query()
+            ->whereKey($validated['id'])
+            ->where('user_id', auth()->id())
+            ->firstOrFail()
+            ->delete();
 
         return redirect()->back();
     }
